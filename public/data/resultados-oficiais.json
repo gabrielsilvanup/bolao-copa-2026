@@ -1,0 +1,515 @@
+{
+  "status": "EM_ANDAMENTO",
+  "ultima_atualizacao": "2026-06-16",
+  "jogos": [
+    {
+      "jogo": 1,
+      "fase": "grupos",
+      "selecao_a": "Mexico",
+      "gols_a": 2,
+      "gols_b": 0,
+      "selecao_b": "South Africa",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "A",
+      "vencedor_oficial": "Mexico",
+      "perdedor_oficial": "South Africa",
+      "encerrado": true
+    },
+    {
+      "jogo": 2,
+      "fase": "grupos",
+      "selecao_a": "Rep. of Korea",
+      "gols_a": 2,
+      "gols_b": 1,
+      "selecao_b": "Czech Rep.",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "A",
+      "vencedor_oficial": "Rep. of Korea",
+      "perdedor_oficial": "Czech Rep.",
+      "encerrado": true
+    },
+    {
+      "jogo": 3,
+      "fase": "grupos",
+      "selecao_a": "Canada",
+      "gols_a": 1,
+      "gols_b": 1,
+      "selecao_b": "Bosnia/Herzeg.",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "EMPATE",
+      "vencedor_oficial": null,
+      "perdedor_oficial": null,
+      "encerrado": true
+    },
+    {
+      "jogo": 4,
+      "fase": "grupos",
+      "selecao_a": "USA",
+      "gols_a": 4,
+      "gols_b": 1,
+      "selecao_b": "Paraguay",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "A",
+      "vencedor_oficial": "USA",
+      "perdedor_oficial": "Paraguay",
+      "encerrado": true
+    },
+    {
+      "jogo": 5,
+      "fase": "grupos",
+      "selecao_a": "Haiti",
+      "gols_a": 0,
+      "gols_b": 1,
+      "selecao_b": "Scotland",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "B",
+      "vencedor_oficial": "Scotland",
+      "perdedor_oficial": "Haiti",
+      "encerrado": true
+    },
+    {
+      "jogo": 6,
+      "fase": "grupos",
+      "selecao_a": "Australia",
+      "gols_a": 2,
+      "gols_b": 0,
+      "selecao_b": "Turkey",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "A",
+      "vencedor_oficial": "Australia",
+      "perdedor_oficial": "Turkey",
+      "encerrado": true
+    },
+    {
+      "jogo": 7,
+      "fase": "grupos",
+      "selecao_a": "Brazil",
+      "gols_a": 1,
+      "gols_b": 1,
+      "selecao_b": "Morocco",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "EMPATE",
+      "vencedor_oficial": null,
+      "perdedor_oficial": null,
+      "encerrado": true
+    },
+    {
+      "jogo": 8,
+      "fase": "grupos",
+      "selecao_a": "Qatar",
+      "gols_a": 1,
+      "gols_b": 1,
+      "selecao_b": "Switzerland",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "EMPATE",
+      "vencedor_oficial": null,
+      "perdedor_oficial": null,
+      "encerrado": true
+    },
+    {
+      "jogo": 9,
+      "fase": "grupos",
+      "selecao_a": "Ivory Coast",
+      "gols_a": 1,
+      "gols_b": 0,
+      "selecao_b": "Ecuador",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "A",
+      "vencedor_oficial": "Ivory Coast",
+      "perdedor_oficial": "Ecuador",
+      "encerrado": true
+    },
+    {
+      "jogo": 10,
+      "fase": "grupos",
+      "selecao_a": "Germany",
+      "gols_a": 7,
+      "gols_b": 1,
+      "selecao_b": "Curaçao",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "A",
+      "vencedor_oficial": "Germany",
+      "perdedor_oficial": "Curaçao",
+      "encerrado": true
+    },
+    {
+      "jogo": 11,
+      "fase": "grupos",
+      "selecao_a": "Netherlands",
+      "gols_a": 2,
+      "gols_b": 2,
+      "selecao_b": "Japan",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "EMPATE",
+      "vencedor_oficial": null,
+      "perdedor_oficial": null,
+      "encerrado": true
+    },
+    {
+      "jogo": 12,
+      "fase": "grupos",
+      "selecao_a": "Sweden",
+      "gols_a": 5,
+      "gols_b": 1,
+      "selecao_b": "Tunisia",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "A",
+      "vencedor_oficial": "Sweden",
+      "perdedor_oficial": "Tunisia",
+      "encerrado": true
+    },
+    {
+      "jogo": 13,
+      "fase": "grupos",
+      "selecao_a": "Saudi Arabia",
+      "gols_a": 1,
+      "gols_b": 1,
+      "selecao_b": "Uruguay",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "EMPATE",
+      "vencedor_oficial": null,
+      "perdedor_oficial": null,
+      "encerrado": true
+    },
+    {
+      "jogo": 14,
+      "fase": "grupos",
+      "selecao_a": "Spain",
+      "gols_a": 0,
+      "gols_b": 0,
+      "selecao_b": "Cape Verde",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "EMPATE",
+      "vencedor_oficial": null,
+      "perdedor_oficial": null,
+      "encerrado": true
+    },
+    {
+      "jogo": 16,
+      "fase": "grupos",
+      "selecao_a": "Belgium",
+      "gols_a": 1,
+      "gols_b": 1,
+      "selecao_b": "Egypt",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "EMPATE",
+      "vencedor_oficial": null,
+      "perdedor_oficial": null,
+      "encerrado": true
+    }
+  ],
+  "fases_oficiais": {
+    "dezesseis_avos": [],
+    "oitavas": [],
+    "quartas": [],
+    "semifinal": [],
+    "final": []
+  },
+  "posicoes_finais_oficiais": {
+    "campeao": null,
+    "vice": null,
+    "terceiro": null,
+    "quarto": null
+  },
+  "chaveamento_oficial": {
+    "ultima_atualizacao": "2026-06-16",
+    "dezesseis_avos": [],
+    "oitavas": [
+      {
+        "jogo": 89,
+        "fase": "oitavas",
+        "slot_a": "W74",
+        "slot_b": "W77",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 74
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 77
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 90,
+        "fase": "oitavas",
+        "slot_a": "W73",
+        "slot_b": "W75",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 73
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 75
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 91,
+        "fase": "oitavas",
+        "slot_a": "W76",
+        "slot_b": "W78",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 76
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 78
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 92,
+        "fase": "oitavas",
+        "slot_a": "W79",
+        "slot_b": "W80",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 79
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 80
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 93,
+        "fase": "oitavas",
+        "slot_a": "W83",
+        "slot_b": "W84",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 83
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 84
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 94,
+        "fase": "oitavas",
+        "slot_a": "W81",
+        "slot_b": "W82",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 81
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 82
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 95,
+        "fase": "oitavas",
+        "slot_a": "W86",
+        "slot_b": "W88",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 86
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 88
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 96,
+        "fase": "oitavas",
+        "slot_a": "W85",
+        "slot_b": "W87",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 85
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 87
+        },
+        "chaveamento_gerado": true
+      }
+    ],
+    "quartas": [
+      {
+        "jogo": 97,
+        "fase": "quartas",
+        "slot_a": "W89",
+        "slot_b": "W90",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 89
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 90
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 98,
+        "fase": "quartas",
+        "slot_a": "W93",
+        "slot_b": "W94",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 93
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 94
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 99,
+        "fase": "quartas",
+        "slot_a": "W91",
+        "slot_b": "W92",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 91
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 92
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 100,
+        "fase": "quartas",
+        "slot_a": "W95",
+        "slot_b": "W96",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 95
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 96
+        },
+        "chaveamento_gerado": true
+      }
+    ],
+    "semifinal": [
+      {
+        "jogo": 101,
+        "fase": "semifinal",
+        "slot_a": "W97",
+        "slot_b": "W98",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 97
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 98
+        },
+        "chaveamento_gerado": true
+      },
+      {
+        "jogo": 102,
+        "fase": "semifinal",
+        "slot_a": "W99",
+        "slot_b": "W100",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 99
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 100
+        },
+        "chaveamento_gerado": true
+      }
+    ],
+    "terceiro_lugar": [
+      {
+        "jogo": 103,
+        "fase": "terceiro_lugar",
+        "slot_a": "L101",
+        "slot_b": "L102",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "perdedor",
+          "jogo": 101
+        },
+        "fonte_b": {
+          "tipo": "perdedor",
+          "jogo": 102
+        },
+        "chaveamento_gerado": true
+      }
+    ],
+    "final": [
+      {
+        "jogo": 104,
+        "fase": "final",
+        "slot_a": "W101",
+        "slot_b": "W102",
+        "selecao_a": null,
+        "selecao_b": null,
+        "fonte_a": {
+          "tipo": "vencedor",
+          "jogo": 101
+        },
+        "fonte_b": {
+          "tipo": "vencedor",
+          "jogo": 102
+        },
+        "chaveamento_gerado": true
+      }
+    ]
+  }
+}
