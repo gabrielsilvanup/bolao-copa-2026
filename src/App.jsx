@@ -162,7 +162,10 @@ export default function App() {
 
   return (
     <main className="page">
-      <Header totalParticipantes={participantes.length} />
+      <Header
+        totalParticipantes={participantes.length}
+        compacto={abaAtual !== "resumo"}
+      />
 
       <NavigationTabs abaAtual={abaAtual} onSelecionarAba={setAbaAtual} />
 

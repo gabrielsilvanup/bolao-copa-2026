@@ -6310,6 +6310,48 @@ td:nth-child(6) {
   min-width: 240px;
 }
 
+.hero.hero-compacto {
+  align-items: center;
+  padding: 20px 26px;
+  margin-bottom: 14px;
+  border-radius: 28px;
+}
+
+.hero.hero-compacto::after {
+  right: 6px;
+  bottom: -46px;
+  font-size: clamp(96px, 10vw, 150px);
+}
+
+.hero.hero-compacto .hero-content {
+  gap: 8px;
+}
+
+.hero.hero-compacto h1 {
+  font-size: clamp(26px, 3.2vw, 44px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.hero.hero-compacto .resumo {
+  grid-template-columns: repeat(3, minmax(82px, 1fr));
+  min-width: 360px;
+}
+
+.hero.hero-compacto .resumo div {
+  padding: 12px 14px;
+  border-radius: 18px;
+}
+
+.hero.hero-compacto .resumo strong {
+  font-size: 28px;
+}
+
+.hero.hero-compacto .resumo span {
+  margin-top: 5px;
+  font-size: 10px;
+}
+
 .tab {
   display: grid;
   gap: 2px;
@@ -6541,21 +6583,96 @@ td:nth-child(6) {
 }
 
 @media (max-width: 760px) {
+  .page {
+    padding-top: 8px;
+  }
+
+  .hero,
+  .hero.hero-compacto {
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .hero::before {
+    opacity: 0.18;
+    background-size: 28px 28px;
+  }
+
+  .hero::after,
+  .hero.hero-compacto::after {
+    display: none;
+  }
+
   .hero-content {
-    gap: 12px;
+    gap: 6px;
   }
 
   .hero-rule-strip {
-    gap: 8px;
+    display: none;
   }
 
-  .hero-rule-strip span {
-    flex: 1 1 calc(50% - 8px);
-    justify-content: center;
-    min-width: 136px;
-    padding: 7px 9px;
-    font-size: 11px;
+  .hero h1,
+  .hero.hero-compacto h1 {
+    max-width: none;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .hero p:not(.tag) {
+    display: none;
+  }
+
+  .hero .tag {
+    min-height: 24px;
+    margin: 0;
+    padding: 5px 8px;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+
+  .hero .tag::before {
+    width: 5px;
+    height: 5px;
+  }
+
+  .resumo,
+  .hero.hero-compacto .resumo {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .resumo div,
+  .hero.hero-compacto .resumo div {
+    align-items: center;
+    min-width: 0;
+    padding: 8px 6px;
+    border-radius: 14px;
     text-align: center;
+  }
+
+  .resumo strong,
+  .hero.hero-compacto .resumo strong {
+    font-size: 22px;
+  }
+
+  .resumo span,
+  .hero.hero-compacto .resumo span {
+    margin-top: 3px;
+    font-size: 9px;
+    line-height: 1.15;
+    letter-spacing: 0.03em;
+  }
+
+  .tabs-card {
+    top: 6px;
+    margin-bottom: 12px;
+    padding: 7px;
   }
 
   .tab {

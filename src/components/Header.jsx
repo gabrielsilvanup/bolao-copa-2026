@@ -1,20 +1,25 @@
-export default function Header({ totalParticipantes }) {
+export default function Header({ totalParticipantes, compacto = false }) {
   return (
-    <header className="hero">
+    <header className={compacto ? "hero hero-compacto" : "hero"}>
       <div className="hero-content">
         <p className="tag">Bolão da Copa 2026</p>
         <h1>Bolão da Copa 2026</h1>
-        <p>
-          Ranking, palpites, resultados oficiais e premiação em uma visão
-          única para acompanhar a disputa sem perder o contexto das regras.
-        </p>
 
-        <div className="hero-rule-strip" aria-label="Resumo das regras">
-          <span>Grupos: 10 + 5</span>
-          <span>Mata-mata: avanço</span>
-          <span>Sem desempate</span>
-          <span>Prêmio dividido</span>
-        </div>
+        {!compacto && (
+          <>
+            <p>
+              Ranking, palpites, resultados oficiais e premiação em uma visão
+              única para acompanhar a disputa sem perder o contexto das regras.
+            </p>
+
+            <div className="hero-rule-strip" aria-label="Resumo das regras">
+              <span>Grupos: 10 + 5</span>
+              <span>Mata-mata: avanço</span>
+              <span>Sem desempate</span>
+              <span>Prêmio dividido</span>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="resumo">
