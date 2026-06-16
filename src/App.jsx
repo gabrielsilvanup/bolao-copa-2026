@@ -13,8 +13,6 @@ import PrizeDistribution from "./components/PrizeDistribution";
 import RankingTable from "./components/RankingTable";
 import ResultsStatus from "./components/ResultsStatus";
 import RulesAndPrizes from "./components/RulesAndPrizes";
-import ScoreBreakdown from "./components/ScoreBreakdown";
-import ScoreSummary from "./components/ScoreSummary";
 import ParticipantOverview from "./components/ParticipantOverview";
 
 const STORAGE_KEY = "bolao-copa-2026-resultados-oficiais";
@@ -75,6 +73,15 @@ export default function App() {
     carregarDados();
   }, []);
 
+  useEffect(() => {
+    window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    });
+  }, [abaAtual]);
+
   const participantesFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
 
@@ -114,7 +121,7 @@ export default function App() {
 
   function atualizarResultadosOficiais(novosResultados) {
     setResultadosOficiais(novosResultados);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(novosResultados));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(novosResultados, null, 2));
   }
 
   function limparResultadosSalvos() {
@@ -208,33 +215,37 @@ export default function App() {
       )}
 
       {abaAtual === "participantes" && (
-  <section className="layout">
-    <ParticipantList
-      participantes={participantesFiltrados}
-      participanteSelecionado={participanteSelecionado}
-      busca={busca}
-      onBuscaChange={setBusca}
-      onSelecionarParticipante={selecionarParticipante}
-    />
+        <section className="layout">
+          <ParticipantList
+            participantes={participantesFiltrados}
+            todosParticipantes={participantes}
+            participanteSelecionado={participanteSelecionado}
+            busca={busca}
+            onBuscaChange={setBusca}
+            onSelecionarParticipante={selecionarParticipante}
+            resultadosOficiais={resultadosOficiais}
+          />
 
-    <section className="conteudo">
-      <ParticipantOverview
-        participante={participanteSelecionado}
-        participantes={participantes}
-        resultadosOficiais={resultadosOficiais}
-      />
-    </section>
-  </section>
-)}
+          <section className="conteudo">
+            <ParticipantOverview
+              participante={participanteSelecionado}
+              participantes={participantes}
+              resultadosOficiais={resultadosOficiais}
+            />
+          </section>
+        </section>
+      )}
 
       {abaAtual === "palpites" && (
         <section className="layout">
           <ParticipantList
             participantes={participantesFiltrados}
+            todosParticipantes={participantes}
             participanteSelecionado={participanteSelecionado}
             busca={busca}
             onBuscaChange={setBusca}
             onSelecionarParticipante={selecionarParticipante}
+            resultadosOficiais={resultadosOficiais}
           />
 
           <section className="conteudo">
@@ -254,9 +265,9 @@ export default function App() {
       )}
 
       {abaAtual === "resultados" && (
-  <section className="aba-conteudo">
-    <OfficialResults resultadosOficiais={resultadosOficiais} />
-  </section>
+        <section className="aba-conteudo">
+          <OfficialResults resultadosOficiais={resultadosOficiais} />
+        </section>
       )}
 
       {abaAtual === "admin" && (
