@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import AdminClassifiedPanel from "./AdminClassifiedPanel";
 import AdminDiagnosticsPanel from "./AdminDiagnosticsPanel";
@@ -31,16 +31,10 @@ export default function AdminArea({
 }) {
   const [codigo, setCodigo] = useState("");
   const [erro, setErro] = useState("");
-  const [liberado, setLiberado] = useState(false);
+  const [liberado, setLiberado] = useState(
+    () => sessionStorage.getItem(ADMIN_SESSION_KEY) === "true"
+  );
   const [abaAdmin, setAbaAdmin] = useState("placares");
-
-  useEffect(() => {
-    const sessaoLiberada = sessionStorage.getItem(ADMIN_SESSION_KEY);
-
-    if (sessaoLiberada === "true") {
-      setLiberado(true);
-    }
-  }, []);
 
   function entrar(event) {
     event.preventDefault();

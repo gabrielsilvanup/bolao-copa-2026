@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { formatarFase } from "../utils/gameUtils";
 import {
   atualizarChaveamentoEProgressoes,
@@ -79,6 +79,35 @@ function getResultadoExistente(resultadosOficiais, numeroJogo) {
   return (resultadosOficiais?.jogos || []).find(
     (jogo) => Number(jogo.jogo) === Number(numeroJogo)
   );
+}
+
+function campoPlacarTexto(valor) {
+  return valor === null || valor === undefined ? "" : String(valor);
+}
+
+function criarCamposFormulario(resultadoExistente) {
+  return {
+    golsA: campoPlacarTexto(resultadoExistente?.gols_a),
+    golsB: campoPlacarTexto(resultadoExistente?.gols_b),
+    penaltisA: campoPlacarTexto(resultadoExistente?.penaltis_a),
+    penaltisB: campoPlacarTexto(resultadoExistente?.penaltis_b),
+  };
+}
+
+function criarOrigemFormulario(numeroJogoSelecionado, resultadoExistente) {
+  if (!numeroJogoSelecionado) return "sem-selecao";
+
+  if (!resultadoExistente) {
+    return `novo:${numeroJogoSelecionado}`;
+  }
+
+  return [
+    numeroJogoSelecionado,
+    resultadoExistente.gols_a,
+    resultadoExistente.gols_b,
+    resultadoExistente.penaltis_a,
+    resultadoExistente.penaltis_b,
+  ].join("|");
 }
 
 function getVencedorPorPlacar(jogo, golsA, golsB, penaltisA, penaltisB) {
@@ -282,10 +311,10 @@ export default function AdminResultsPanel({
   const [statusFiltro, setStatusFiltro] = useState("todos");
   const [busca, setBusca] = useState("");
   const [numeroJogoSelecionado, setNumeroJogoSelecionado] = useState("");
-  const [golsA, setGolsA] = useState("");
-  const [golsB, setGolsB] = useState("");
-  const [penaltisA, setPenaltisA] = useState("");
-  const [penaltisB, setPenaltisB] = useState("");
+  const [rascunhoFormulario, setRascunhoFormulario] = useState({
+    origem: null,
+    campos: null,
+  });
   const [mensagem, setMensagem] = useState(null);
 
   const jogoSelecionado = useMemo(() => {
@@ -299,6 +328,24 @@ export default function AdminResultsPanel({
 
     return getResultadoExistente(resultadosOficiais, numeroJogoSelecionado);
   }, [resultadosOficiais, numeroJogoSelecionado]);
+
+  const origemFormulario = criarOrigemFormulario(
+    numeroJogoSelecionado,
+    resultadoExistente
+  );
+
+  const formularioFonte = useMemo(
+    () => criarCamposFormulario(resultadoExistente),
+    [resultadoExistente]
+  );
+
+  const camposFormulario =
+    rascunhoFormulario.origem === origemFormulario &&
+    rascunhoFormulario.campos
+      ? rascunhoFormulario.campos
+      : formularioFonte;
+
+  const { golsA, golsB, penaltisA, penaltisB } = camposFormulario;
 
   const jogosFiltrados = useMemo(() => {
     const termo = normalizarTexto(busca);
@@ -360,62 +407,41 @@ export default function AdminResultsPanel({
 
   const totalPendentes = jogosBase.length - totalCadastrados;
 
-  useEffect(() => {
-    if (!resultadoExistente) {
-      setGolsA("");
-      setGolsB("");
-      setPenaltisA("");
-      setPenaltisB("");
-      setMensagem(null);
-      return;
-    }
-
-    setGolsA(
-      resultadoExistente.gols_a === null ||
-        resultadoExistente.gols_a === undefined
-        ? ""
-        : String(resultadoExistente.gols_a)
-    );
-
-    setGolsB(
-      resultadoExistente.gols_b === null ||
-        resultadoExistente.gols_b === undefined
-        ? ""
-        : String(resultadoExistente.gols_b)
-    );
-
-    setPenaltisA(
-      resultadoExistente.penaltis_a === null ||
-        resultadoExistente.penaltis_a === undefined
-        ? ""
-        : String(resultadoExistente.penaltis_a)
-    );
-
-    setPenaltisB(
-      resultadoExistente.penaltis_b === null ||
-        resultadoExistente.penaltis_b === undefined
-        ? ""
-        : String(resultadoExistente.penaltis_b)
-    );
-
-    setMensagem({
-      tipo: "info",
-      texto:
-        "Este jogo já possui resultado cadastrado. Ao salvar, ele será atualizado.",
+  function atualizarCampoFormulario(campo, valor) {
+    setRascunhoFormulario({
+      origem: origemFormulario,
+      campos: {
+        ...camposFormulario,
+        [campo]: valor,
+      },
     });
-  }, [resultadoExistente]);
+  }
 
   function selecionarJogo(numeroJogo) {
+    const resultadoDoJogo = getResultadoExistente(resultadosOficiais, numeroJogo);
+
     setNumeroJogoSelecionado(String(numeroJogo));
-    setMensagem(null);
+    setRascunhoFormulario({
+      origem: null,
+      campos: null,
+    });
+    setMensagem(
+      resultadoDoJogo
+        ? {
+            tipo: "info",
+            texto:
+              "Este jogo já possui resultado cadastrado. Ao salvar, ele será atualizado.",
+          }
+        : null
+    );
   }
 
   function limparFormulario() {
     setNumeroJogoSelecionado("");
-    setGolsA("");
-    setGolsB("");
-    setPenaltisA("");
-    setPenaltisB("");
+    setRascunhoFormulario({
+      origem: null,
+      campos: null,
+    });
     setMensagem(null);
   }
 
@@ -792,7 +818,9 @@ export default function AdminResultsPanel({
                     min="0"
                     step="1"
                     value={golsA}
-                    onChange={(event) => setGolsA(event.target.value)}
+                    onChange={(event) =>
+                      atualizarCampoFormulario("golsA", event.target.value)
+                    }
                     placeholder="0"
                     disabled={
                       !jogoSelecionado.selecao_a || !jogoSelecionado.selecao_b
@@ -811,7 +839,9 @@ export default function AdminResultsPanel({
                     min="0"
                     step="1"
                     value={golsB}
-                    onChange={(event) => setGolsB(event.target.value)}
+                    onChange={(event) =>
+                      atualizarCampoFormulario("golsB", event.target.value)
+                    }
                     placeholder="0"
                     disabled={
                       !jogoSelecionado.selecao_a || !jogoSelecionado.selecao_b
@@ -842,7 +872,12 @@ export default function AdminResultsPanel({
                       min="0"
                       step="1"
                       value={penaltisA}
-                      onChange={(event) => setPenaltisA(event.target.value)}
+                      onChange={(event) =>
+                        atualizarCampoFormulario(
+                          "penaltisA",
+                          event.target.value
+                        )
+                      }
                       placeholder="A"
                       disabled={!deveMostrarPenaltis}
                     />
@@ -854,7 +889,12 @@ export default function AdminResultsPanel({
                       min="0"
                       step="1"
                       value={penaltisB}
-                      onChange={(event) => setPenaltisB(event.target.value)}
+                      onChange={(event) =>
+                        atualizarCampoFormulario(
+                          "penaltisB",
+                          event.target.value
+                        )
+                      }
                       placeholder="B"
                       disabled={!deveMostrarPenaltis}
                     />

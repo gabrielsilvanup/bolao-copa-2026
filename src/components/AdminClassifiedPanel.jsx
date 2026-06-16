@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { formatarFase } from "../utils/gameUtils";
 import {
   dataHojeISO,
@@ -28,14 +28,35 @@ function getFaseInfo(faseId) {
   return FASES.find((fase) => fase.id === faseId);
 }
 
+function getFasesDoResultado(resultadosOficiais) {
+  return {
+    ...criarFasesVazias(),
+    ...(resultadosOficiais?.fases_oficiais || {}),
+  };
+}
+
 export default function AdminClassifiedPanel({
   participantes,
   resultadosOficiais,
   onAtualizarResultados,
 }) {
   const [faseAtual, setFaseAtual] = useState("dezesseis_avos");
-  const [selecoesPorFase, setSelecoesPorFase] = useState(criarFasesVazias());
+  const [rascunhoFases, setRascunhoFases] = useState({
+    origem: null,
+    fases: null,
+  });
   const [mensagem, setMensagem] = useState(null);
+
+  const origemFases = resultadosOficiais?.fases_oficiais || null;
+  const fasesDoResultado = useMemo(
+    () => getFasesDoResultado(resultadosOficiais),
+    [resultadosOficiais]
+  );
+
+  const selecoesPorFase =
+    rascunhoFases.origem === origemFases && rascunhoFases.fases
+      ? rascunhoFases.fases
+      : fasesDoResultado;
 
   const selecoes = useMemo(() => {
     const jogos = participantes?.[0]?.jogos || [];
@@ -48,13 +69,6 @@ export default function AdminClassifiedPanel({
 
     return Array.from(nomes).sort((a, b) => a.localeCompare(b));
   }, [participantes]);
-
-  useEffect(() => {
-    setSelecoesPorFase({
-      ...criarFasesVazias(),
-      ...(resultadosOficiais?.fases_oficiais || {}),
-    });
-  }, [resultadosOficiais]);
 
   const faseInfo = getFaseInfo(faseAtual);
   const selecionadas = selecoesPorFase[faseAtual] || [];
@@ -80,7 +94,8 @@ export default function AdminClassifiedPanel({
   }
 
   function alternarSelecao(selecao) {
-    setSelecoesPorFase((estadoAtual) => {
+    setRascunhoFases(() => {
+      const estadoAtual = selecoesPorFase;
       const faseSelecionadaInfo = getFaseInfo(faseAtual);
       const limite = faseSelecionadaInfo?.esperado || 0;
       const listaAtual = estadoAtual[faseAtual] || [];
@@ -90,8 +105,11 @@ export default function AdminClassifiedPanel({
 
       if (jaSelecionada) {
         return {
-          ...estadoAtual,
-          [faseAtual]: listaAtual.filter((item) => item !== selecao),
+          origem: origemFases,
+          fases: {
+            ...estadoAtual,
+            [faseAtual]: listaAtual.filter((item) => item !== selecao),
+          },
         };
       }
 
@@ -101,14 +119,20 @@ export default function AdminClassifiedPanel({
           texto: `${faseSelecionadaInfo.label} já atingiu o limite de ${limite} seleções.`,
         });
 
-        return estadoAtual;
+        return {
+          origem: origemFases,
+          fases: estadoAtual,
+        };
       }
 
       return {
-        ...estadoAtual,
-        [faseAtual]: [...listaAtual, selecao].sort((a, b) =>
-          a.localeCompare(b)
-        ),
+        origem: origemFases,
+        fases: {
+          ...estadoAtual,
+          [faseAtual]: [...listaAtual, selecao].sort((a, b) =>
+            a.localeCompare(b)
+          ),
+        },
       };
     });
   }
@@ -141,7 +165,10 @@ export default function AdminClassifiedPanel({
       [faseAtual]: [],
     };
 
-    setSelecoesPorFase(novasFases);
+    setRascunhoFases({
+      origem: origemFases,
+      fases: novasFases,
+    });
 
     salvarEstadoFases(
       novasFases,
@@ -158,7 +185,10 @@ export default function AdminClassifiedPanel({
 
     const novasFases = criarFasesVazias();
 
-    setSelecoesPorFase(novasFases);
+    setRascunhoFases({
+      origem: origemFases,
+      fases: novasFases,
+    });
 
     salvarEstadoFases(novasFases, "Todos os classificados foram zerados.");
   }

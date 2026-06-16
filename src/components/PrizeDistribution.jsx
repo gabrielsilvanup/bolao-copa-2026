@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { calcularRanking } from "../utils/scoringUtils";
 import {
   VALOR_POR_PARTICIPANTE,
@@ -19,14 +18,9 @@ export default function PrizeDistribution({
   const valorOrganizacao = calcularValorOrganizacao(totalArrecadado);
   const valorPremiacao = calcularValorPremiacao(totalArrecadado);
 
-  const ranking = useMemo(
-    () => calcularRanking(participantes, resultadosOficiais),
-    [participantes, resultadosOficiais]
-  );
-
-  const premiacao = useMemo(
-    () => calcularPremiacaoComEmpate(ranking, totalArrecadado),
-    [ranking, totalArrecadado]
+  const premiacao = calcularPremiacaoComEmpate(
+    calcularRanking(participantes, resultadosOficiais),
+    totalArrecadado
   );
 
   const premiados = premiacao.filter((item) => item.valor > 0);

@@ -113,13 +113,6 @@ function vencedorTexto(jogo) {
   return jogo.vencedor_oficial || "Não informado";
 }
 
-function criarMapaResultados(jogos) {
-  return (jogos || []).reduce((mapa, jogo) => {
-    mapa[Number(jogo.jogo)] = jogo;
-    return mapa;
-  }, {});
-}
-
 function getChaveamentoLista(resultadosOficiais) {
   const chaveamento = resultadosOficiais?.chaveamento_oficial || {};
 
@@ -146,7 +139,6 @@ function getChaveamentoLista(resultadosOficiais) {
 
 function montarJogosPublicos(resultadosOficiais) {
   const jogosComResultado = resultadosOficiais?.jogos || [];
-  const mapaResultados = criarMapaResultados(jogosComResultado);
   const jogosChaveamento = getChaveamentoLista(resultadosOficiais);
 
   const mapaFinal = {};

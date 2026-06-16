@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import TeamName from "./TeamName";
 import {
   criarPosicoesFinaisPadrao,
@@ -14,13 +14,34 @@ const POSICOES = [
   { id: "quarto", label: "4º lugar", pontos: 35 },
 ];
 
+function getPosicoesDoResultado(resultadosOficiais) {
+  return {
+    ...criarPosicoesFinaisPadrao(),
+    ...(resultadosOficiais?.posicoes_finais_oficiais || {}),
+  };
+}
+
 export default function AdminFinalPositionsPanel({
   participantes,
   resultadosOficiais,
   onAtualizarResultados,
 }) {
-  const [posicoes, setPosicoes] = useState(criarPosicoesFinaisPadrao);
+  const [rascunhoPosicoes, setRascunhoPosicoes] = useState({
+    origem: null,
+    posicoes: null,
+  });
   const [mensagem, setMensagem] = useState(null);
+
+  const origemPosicoes = resultadosOficiais?.posicoes_finais_oficiais || null;
+  const posicoesDoResultado = useMemo(
+    () => getPosicoesDoResultado(resultadosOficiais),
+    [resultadosOficiais]
+  );
+
+  const posicoes =
+    rascunhoPosicoes.origem === origemPosicoes && rascunhoPosicoes.posicoes
+      ? rascunhoPosicoes.posicoes
+      : posicoesDoResultado;
 
   const selecoes = useMemo(() => {
     const jogos = participantes?.[0]?.jogos || [];
@@ -36,20 +57,16 @@ export default function AdminFinalPositionsPanel({
     );
   }, [participantes]);
 
-  useEffect(() => {
-    setPosicoes({
-      ...criarPosicoesFinaisPadrao(),
-      ...(resultadosOficiais?.posicoes_finais_oficiais || {}),
-    });
-  }, [resultadosOficiais]);
-
   function alterarPosicao(posicao, selecao) {
     setMensagem(null);
 
-    setPosicoes((estadoAtual) => ({
-      ...estadoAtual,
-      [posicao]: selecao || null,
-    }));
+    setRascunhoPosicoes({
+      origem: origemPosicoes,
+      posicoes: {
+        ...posicoes,
+        [posicao]: selecao || null,
+      },
+    });
   }
 
   function validarDuplicidade() {
@@ -95,7 +112,10 @@ export default function AdminFinalPositionsPanel({
 
     const novasPosicoes = criarPosicoesFinaisPadrao();
 
-    setPosicoes(novasPosicoes);
+    setRascunhoPosicoes({
+      origem: origemPosicoes,
+      posicoes: novasPosicoes,
+    });
 
     const novosResultados = normalizarResultadosOficiais(resultadosOficiais, {
       ultima_atualizacao: dataHojeISO(),
