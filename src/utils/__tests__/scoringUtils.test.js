@@ -43,6 +43,25 @@ function criarResultado(sobrescritas = {}) {
   };
 }
 
+function participanteComFases(participante, fases = {}) {
+  return {
+    participante,
+    arquivo_origem: `${participante}.json`,
+    status_extracao: "ok",
+    jogos: [],
+    fases,
+  };
+}
+
+const RESULTADOS_OFICIAIS_RANKING = {
+  jogos: [],
+  fases_oficiais: {
+    dezesseis_avos: ["Germany"],
+    oitavas: ["Spain"],
+    final: ["Brazil"],
+  },
+};
+
 describe("resultadoPeloPlacar", () => {
   it("calcula resultado basico a partir dos gols", () => {
     assert.equal(resultadoPeloPlacar(2, 1), "A");
@@ -121,14 +140,30 @@ describe("calcularPontuacaoJogo", () => {
     assert.equal(calculo.acertouPlacar, true);
   });
 
-  it("registra o comportamento atual: jogo de mata-mata nao pontua por placar", () => {
+  it("nao pontua resultado nem placar em jogo de mata-mata", () => {
     const calculo = calcularPontuacaoJogo(
-      criarPalpite({ fase: "oitavas" }),
-      criarResultado({ fase: "oitavas" })
+      criarPalpite({
+        jogo: 89,
+        fase: "oitavas",
+        gols_a: 1,
+        gols_b: 0,
+        vencedor_previsto: "Brazil",
+        perdedor_previsto: "Morocco",
+      }),
+      criarResultado({
+        jogo: 89,
+        fase: "oitavas",
+        gols_a: 1,
+        gols_b: 0,
+        vencedor_oficial: "Brazil",
+        perdedor_oficial: "Morocco",
+      })
     );
 
     assert.equal(calculo.pontos, 0);
     assert.equal(calculo.status, "mata_mata_por_fase");
+    assert.equal(calculo.acertouResultado, false);
+    assert.equal(calculo.acertouPlacar, false);
   });
 });
 
@@ -168,7 +203,62 @@ describe("calcularPontuacaoParticipante e calcularRanking", () => {
     assert.equal(resumo.total, 85);
   });
 
-  it("ordena ranking por pontos e desempata por nome mantendo posicao empatada", () => {
+  it("pontua mata-mata apenas por avanco de fase e posicoes finais", () => {
+    const participante = {
+      participante: "Ana",
+      arquivo_origem: "ana.json",
+      status_extracao: "ok",
+      jogos: [
+        criarPalpite({
+          jogo: 89,
+          fase: "oitavas",
+          gols_a: 1,
+          gols_b: 0,
+          vencedor_previsto: "Brazil",
+          perdedor_previsto: "Morocco",
+        }),
+      ],
+      fases: {
+        oitavas: ["Brazil"],
+      },
+      posicoes_finais: {
+        campeao: "Brazil",
+      },
+    };
+
+    const resultadosOficiais = {
+      jogos: [
+        criarResultado({
+          jogo: 89,
+          fase: "oitavas",
+          gols_a: 1,
+          gols_b: 0,
+          vencedor_oficial: "Brazil",
+          perdedor_oficial: "Morocco",
+        }),
+      ],
+      fases_oficiais: {
+        oitavas: ["Brazil"],
+      },
+      posicoes_finais_oficiais: {
+        campeao: "Brazil",
+      },
+    };
+
+    const resumo = calcularPontuacaoParticipante(
+      participante,
+      resultadosOficiais
+    );
+
+    assert.equal(resumo.pontosJogos, 0);
+    assert.equal(resumo.jogosEncerrados, 1);
+    assert.equal(resumo.jogosPontuados, 0);
+    assert.equal(resumo.pontosFases, 15);
+    assert.equal(resumo.pontosPosicoesFinais, 60);
+    assert.equal(resumo.total, 75);
+  });
+
+  it("mantem mesma posicao para empatados sem criterio de desempate", () => {
     const participantes = [
       {
         participante: "Bruno",
@@ -196,5 +286,60 @@ describe("calcularPontuacaoParticipante e calcularRanking", () => {
     );
     assert.equal(ranking[0].empatado, true);
     assert.equal(ranking[0].totalEmpatados, 2);
+  });
+
+  it("mantem empate em primeiro com posicoes 1, 1, 3 e 4", () => {
+    const participantes = [
+      participanteComFases("Zara", { final: ["Brazil"] }),
+      participanteComFases("Bruno", { oitavas: ["Spain"] }),
+      participanteComFases("Ana", { final: ["Brazil"] }),
+      participanteComFases("Diego"),
+    ];
+
+    const ranking = calcularRanking(participantes, RESULTADOS_OFICIAIS_RANKING);
+
+    assert.deepEqual(
+      ranking.map((item) => item.participante),
+      ["Ana", "Zara", "Bruno", "Diego"]
+    );
+    assert.deepEqual(
+      ranking.map((item) => item.resumo.total),
+      [30, 30, 15, 0]
+    );
+    assert.deepEqual(
+      ranking.map((item) => item.posicao),
+      [1, 1, 3, 4]
+    );
+    assert.equal(ranking[0].totalEmpatados, 2);
+    assert.equal(ranking[1].totalEmpatados, 2);
+  });
+
+  it("mantem empate em segundo com posicoes 1, 2, 2, 2 e 5", () => {
+    const participantes = [
+      participanteComFases("Lider", { final: ["Brazil"] }),
+      participanteComFases("Zara", { oitavas: ["Spain"] }),
+      participanteComFases("Bruno", { oitavas: ["Spain"] }),
+      participanteComFases("Ana", { oitavas: ["Spain"] }),
+      participanteComFases("Quinto", { dezesseis_avos: ["Germany"] }),
+    ];
+
+    const ranking = calcularRanking(participantes, RESULTADOS_OFICIAIS_RANKING);
+
+    assert.deepEqual(
+      ranking.map((item) => item.participante),
+      ["Lider", "Ana", "Bruno", "Zara", "Quinto"]
+    );
+    assert.deepEqual(
+      ranking.map((item) => item.resumo.total),
+      [30, 15, 15, 15, 10]
+    );
+    assert.deepEqual(
+      ranking.map((item) => item.posicao),
+      [1, 2, 2, 2, 5]
+    );
+    assert.deepEqual(
+      ranking.map((item) => item.totalEmpatados),
+      [1, 3, 3, 3, 1]
+    );
   });
 });
