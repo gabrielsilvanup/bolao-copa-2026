@@ -1,0 +1,33 @@
+{
+  "status": "EM_TESTE",
+  "ultima_atualizacao": "2026-06-15",
+  "jogos": [
+    {
+      "jogo": 1,
+      "fase": "grupos",
+      "selecao_a": "Mexico",
+      "gols_a": 2,
+      "gols_b": 1,
+      "selecao_b": "South Africa",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "A",
+      "vencedor_oficial": "Mexico",
+      "perdedor_oficial": "South Africa",
+      "encerrado": true
+    }
+  ],
+  "fases_oficiais": {
+    "dezesseis_avos": ["Mexico", "Brazil", "France", "Spain"],
+    "oitavas": [],
+    "quartas": [],
+    "semifinal": [],
+    "final": []
+  },
+  "posicoes_finais_oficiais": {
+    "campeao": null,
+    "vice": null,
+    "terceiro": null,
+    "quarto": null
+  }
+}
