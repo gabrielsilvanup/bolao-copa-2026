@@ -1,17 +1,10 @@
 import { useState } from "react";
 import { normalizarResultadosOficiais } from "../utils/officialResultsUtils";
-
-function validarResultados(dados) {
-  if (!dados || typeof dados !== "object" || Array.isArray(dados)) {
-    return "O arquivo não contém um JSON válido de resultados.";
-  }
-
-  if (!Array.isArray(dados.jogos)) {
-    return "O arquivo precisa ter a propriedade jogos como lista.";
-  }
-
-  return null;
-}
+import {
+  formatarResumoValidacaoResultados,
+  normalizarFormatoResultadosOficiais,
+  validarResultadosOficiais,
+} from "../utils/officialResultsValidation";
 
 export default function AdminImportPanel({
   resultadosOficiais,
@@ -37,20 +30,23 @@ export default function AdminImportPanel({
     leitor.onload = () => {
       try {
         const dados = JSON.parse(leitor.result);
-        const erro = validarResultados(dados);
+        const validacao = validarResultadosOficiais(dados);
 
-        if (erro) {
+        if (!validacao.valido) {
           setMensagem({
             tipo: "erro",
-            texto: erro,
+            texto: `Arquivo rejeitado: ${formatarResumoValidacaoResultados(
+              validacao
+            )}`,
           });
 
           return;
         }
 
+        const dadosPreparados = normalizarFormatoResultadosOficiais(dados);
         const normalizado = normalizarResultadosOficiais(
           resultadosOficiais,
-          dados
+          dadosPreparados
         );
 
         setDadosImportados(normalizado);
@@ -58,7 +54,11 @@ export default function AdminImportPanel({
         setMensagem({
           tipo: "sucesso",
           texto:
-            "Arquivo lido com sucesso. Confira o resumo e clique em importar.",
+            validacao.avisos.length > 0
+              ? `Arquivo lido com ${validacao.avisos.length} aviso(s). ${formatarResumoValidacaoResultados(
+                  validacao
+                )}`
+              : "Arquivo lido com sucesso. Confira o resumo e clique em importar.",
         });
       } catch {
         setMensagem({

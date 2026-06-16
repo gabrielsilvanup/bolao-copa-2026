@@ -5,6 +5,7 @@ import {
   calcularValorPremiacao,
   formatarDinheiro,
 } from "../utils/prizeUtils";
+import { validarResultadosOficiais } from "../utils/officialResultsValidation";
 
 const TOTAL_PARTICIPANTES_ESPERADO = 37;
 const TOTAL_JOGOS_POR_PARTICIPANTE = 104;
@@ -93,44 +94,54 @@ function validarParticipantes(participantes) {
 
 function validarResultados(resultadosOficiais) {
   const itens = [];
-  const jogos = resultadosOficiais?.jogos || [];
+  const validacao = validarResultadosOficiais(resultadosOficiais);
 
-  const numeros = jogos.map((jogo) => jogo.jogo);
-  const duplicados = numeros.filter(
-    (numero, index) => numeros.indexOf(numero) !== index
-  );
-
-  if (duplicados.length === 0) {
-    itens.push(criarItem("ok", "Jogos oficiais duplicados", "Nenhum jogo duplicado."));
-  } else {
-    itens.push(
-      criarItem(
-        "erro",
-        "Jogos oficiais duplicados",
-        `Jogos duplicados: ${Array.from(new Set(duplicados)).join(", ")}.`
-      )
-    );
-  }
-
-  const encerrados = jogos.filter((jogo) => jogo.encerrado);
-  const incompletos = encerrados.filter(
-    (jogo) => jogo.gols_a === null || jogo.gols_b === null
-  );
-
-  if (incompletos.length === 0) {
+  if (validacao.erros.length === 0) {
     itens.push(
       criarItem(
         "ok",
-        "Placares oficiais",
-        `${encerrados.length} jogo(s) encerrado(s) com placar preenchido.`
+        "Integridade dos resultados oficiais",
+        "Nenhum erro estrutural encontrado."
       )
     );
   } else {
+    validacao.erros.slice(0, 8).forEach((erro) => {
+      itens.push(
+        criarItem(
+          "erro",
+          "Resultados oficiais",
+          `${erro.caminho}: ${erro.mensagem}`
+        )
+      );
+    });
+
+    if (validacao.erros.length > 8) {
+      itens.push(
+        criarItem(
+          "erro",
+          "Resultados oficiais",
+          `Mais ${validacao.erros.length - 8} erro(s) nao exibidos.`
+        )
+      );
+    }
+  }
+
+  validacao.avisos.slice(0, 8).forEach((aviso) => {
     itens.push(
       criarItem(
-        "erro",
-        "Placares oficiais",
-        `${incompletos.length} jogo(s) encerrado(s) sem placar completo.`
+        "alerta",
+        "Resultados oficiais",
+        `${aviso.caminho}: ${aviso.mensagem}`
+      )
+    );
+  });
+
+  if (validacao.avisos.length > 8) {
+    itens.push(
+      criarItem(
+        "alerta",
+        "Resultados oficiais",
+        `Mais ${validacao.avisos.length - 8} aviso(s) nao exibidos.`
       )
     );
   }
