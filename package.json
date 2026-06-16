@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "test": "node --import ./scripts/register-test-loader.mjs --test \"src/utils/__tests__/*.test.js\"",
     "validate:data": "node scripts/validate-data.mjs",
     "preview": "vite preview"
   },
