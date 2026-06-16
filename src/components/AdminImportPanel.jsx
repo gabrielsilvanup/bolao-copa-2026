@@ -1,39 +1,5 @@
 import { useState } from "react";
-
-const FASES_PADRAO = {
-  dezesseis_avos: [],
-  oitavas: [],
-  quartas: [],
-  semifinal: [],
-  final: [],
-};
-
-const POSICOES_PADRAO = {
-  campeao: null,
-  vice: null,
-  terceiro: null,
-  quarto: null,
-};
-
-function dataHojeISO() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function normalizarResultados(dados) {
-  return {
-    status: dados.status || "EM_ANDAMENTO",
-    ultima_atualizacao: dados.ultima_atualizacao || dataHojeISO(),
-    jogos: Array.isArray(dados.jogos) ? dados.jogos : [],
-    fases_oficiais: {
-      ...FASES_PADRAO,
-      ...(dados.fases_oficiais || {}),
-    },
-    posicoes_finais_oficiais: {
-      ...POSICOES_PADRAO,
-      ...(dados.posicoes_finais_oficiais || {}),
-    },
-  };
-}
+import { normalizarResultadosOficiais } from "../utils/officialResultsUtils";
 
 function validarResultados(dados) {
   if (!dados || typeof dados !== "object" || Array.isArray(dados)) {
@@ -47,7 +13,10 @@ function validarResultados(dados) {
   return null;
 }
 
-export default function AdminImportPanel({ onAtualizarResultados }) {
+export default function AdminImportPanel({
+  resultadosOficiais,
+  onAtualizarResultados,
+}) {
   const [arquivoNome, setArquivoNome] = useState("");
   const [dadosImportados, setDadosImportados] = useState(null);
   const [mensagem, setMensagem] = useState(null);
@@ -79,7 +48,10 @@ export default function AdminImportPanel({ onAtualizarResultados }) {
           return;
         }
 
-        const normalizado = normalizarResultados(dados);
+        const normalizado = normalizarResultadosOficiais(
+          resultadosOficiais,
+          dados
+        );
 
         setDadosImportados(normalizado);
 

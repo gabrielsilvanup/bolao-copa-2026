@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { formatarFase } from "../utils/gameUtils";
+import {
+  dataHojeISO,
+  normalizarResultadosOficiais,
+} from "../utils/officialResultsUtils";
 import TeamName from "./TeamName";
 
 const FASES = [
@@ -10,13 +14,6 @@ const FASES = [
   { id: "final", label: "Final", esperado: 2 },
 ];
 
-const POSICOES_PADRAO = {
-  campeao: null,
-  vice: null,
-  terceiro: null,
-  quarto: null,
-};
-
 function criarFasesVazias() {
   return {
     dezesseis_avos: [],
@@ -25,10 +22,6 @@ function criarFasesVazias() {
     semifinal: [],
     final: [],
   };
-}
-
-function dataHojeISO() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 function getFaseInfo(faseId) {
@@ -70,17 +63,13 @@ export default function AdminClassifiedPanel({
   const temExcesso = selecionadas.length > quantidadeEsperada;
 
   function salvarEstadoFases(novasFases, textoSucesso) {
-    const novosResultados = {
-      status: resultadosOficiais?.status || "EM_ANDAMENTO",
+    const novosResultados = normalizarResultadosOficiais(resultadosOficiais, {
       ultima_atualizacao: dataHojeISO(),
-      jogos: resultadosOficiais?.jogos || [],
       fases_oficiais: {
         ...criarFasesVazias(),
         ...novasFases,
       },
-      posicoes_finais_oficiais:
-        resultadosOficiais?.posicoes_finais_oficiais || POSICOES_PADRAO,
-    };
+    });
 
     onAtualizarResultados(novosResultados);
 

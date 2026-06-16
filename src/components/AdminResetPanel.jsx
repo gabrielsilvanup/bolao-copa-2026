@@ -1,27 +1,10 @@
 import { useState } from "react";
-
-function criarFasesVazias() {
-  return {
-    dezesseis_avos: [],
-    oitavas: [],
-    quartas: [],
-    semifinal: [],
-    final: [],
-  };
-}
-
-function criarPosicoesVazias() {
-  return {
-    campeao: null,
-    vice: null,
-    terceiro: null,
-    quarto: null,
-  };
-}
-
-function dataHojeISO() {
-  return new Date().toISOString().slice(0, 10);
-}
+import {
+  criarFasesOficiaisPadrao,
+  criarPosicoesFinaisPadrao,
+  dataHojeISO,
+  normalizarResultadosOficiais,
+} from "../utils/officialResultsUtils";
 
 function contarClassificados(fases) {
   return Object.values(fases || {}).reduce((total, lista) => {
@@ -55,19 +38,9 @@ export default function AdminResetPanel({
   );
 
   function montarBase() {
-    return {
-      status: resultadosOficiais?.status || "EM_ANDAMENTO",
+    return normalizarResultadosOficiais(resultadosOficiais, {
       ultima_atualizacao: dataHojeISO(),
-      jogos: resultadosOficiais?.jogos || [],
-      fases_oficiais: {
-        ...criarFasesVazias(),
-        ...(resultadosOficiais?.fases_oficiais || {}),
-      },
-      posicoes_finais_oficiais: {
-        ...criarPosicoesVazias(),
-        ...(resultadosOficiais?.posicoes_finais_oficiais || {}),
-      },
-    };
+    });
   }
 
   function zerarPlacares() {
@@ -100,7 +73,7 @@ export default function AdminResetPanel({
     onAtualizarResultados({
       ...montarBase(),
       ultima_atualizacao: dataHojeISO(),
-      fases_oficiais: criarFasesVazias(),
+      fases_oficiais: criarFasesOficiaisPadrao(),
     });
 
     setMensagem({
@@ -119,7 +92,7 @@ export default function AdminResetPanel({
     onAtualizarResultados({
       ...montarBase(),
       ultima_atualizacao: dataHojeISO(),
-      posicoes_finais_oficiais: criarPosicoesVazias(),
+      posicoes_finais_oficiais: criarPosicoesFinaisPadrao(),
     });
 
     setMensagem({
@@ -135,13 +108,24 @@ export default function AdminResetPanel({
 
     if (!confirmar) return;
 
-    onAtualizarResultados({
+    onAtualizarResultados(normalizarResultadosOficiais(resultadosOficiais, {
       status: "NAO_INICIADO",
       ultima_atualizacao: dataHojeISO(),
       jogos: [],
-      fases_oficiais: criarFasesVazias(),
-      posicoes_finais_oficiais: criarPosicoesVazias(),
-    });
+      fases_oficiais: criarFasesOficiaisPadrao(),
+      posicoes_finais_oficiais: criarPosicoesFinaisPadrao(),
+      chaveamento_oficial: {
+        ...(resultadosOficiais?.chaveamento_oficial || {}),
+        ultima_atualizacao: dataHojeISO(),
+        dezesseis_avos: [],
+        oitavas: [],
+        quartas: [],
+        semifinal: [],
+        terceiro_lugar: [],
+        final: [],
+        terceiros_por_jogo: {},
+      },
+    }));
 
     setMensagem({
       tipo: "sucesso",

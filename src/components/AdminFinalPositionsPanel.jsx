@@ -1,21 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import TeamName from "./TeamName";
+import {
+  criarPosicoesFinaisPadrao,
+  dataHojeISO,
+  normalizarResultadosOficiais,
+} from "../utils/officialResultsUtils";
 import { formatarSelecao } from "../utils/teamUtils";
-
-const FASES_PADRAO = {
-  dezesseis_avos: [],
-  oitavas: [],
-  quartas: [],
-  semifinal: [],
-  final: [],
-};
-
-const POSICOES_PADRAO = {
-  campeao: null,
-  vice: null,
-  terceiro: null,
-  quarto: null,
-};
 
 const POSICOES = [
   { id: "campeao", label: "Campeão", pontos: 60 },
@@ -24,16 +14,12 @@ const POSICOES = [
   { id: "quarto", label: "4º lugar", pontos: 35 },
 ];
 
-function dataHojeISO() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 export default function AdminFinalPositionsPanel({
   participantes,
   resultadosOficiais,
   onAtualizarResultados,
 }) {
-  const [posicoes, setPosicoes] = useState(POSICOES_PADRAO);
+  const [posicoes, setPosicoes] = useState(criarPosicoesFinaisPadrao);
   const [mensagem, setMensagem] = useState(null);
 
   const selecoes = useMemo(() => {
@@ -52,7 +38,7 @@ export default function AdminFinalPositionsPanel({
 
   useEffect(() => {
     setPosicoes({
-      ...POSICOES_PADRAO,
+      ...criarPosicoesFinaisPadrao(),
       ...(resultadosOficiais?.posicoes_finais_oficiais || {}),
     });
   }, [resultadosOficiais]);
@@ -84,19 +70,13 @@ export default function AdminFinalPositionsPanel({
       return;
     }
 
-    const novosResultados = {
-      status: resultadosOficiais?.status || "EM_ANDAMENTO",
+    const novosResultados = normalizarResultadosOficiais(resultadosOficiais, {
       ultima_atualizacao: dataHojeISO(),
-      jogos: resultadosOficiais?.jogos || [],
-      fases_oficiais: {
-        ...FASES_PADRAO,
-        ...(resultadosOficiais?.fases_oficiais || {}),
-      },
       posicoes_finais_oficiais: {
-        ...POSICOES_PADRAO,
+        ...criarPosicoesFinaisPadrao(),
         ...posicoes,
       },
-    };
+    });
 
     onAtualizarResultados(novosResultados);
 
@@ -113,20 +93,14 @@ export default function AdminFinalPositionsPanel({
 
     if (!confirmar) return;
 
-    const novasPosicoes = POSICOES_PADRAO;
+    const novasPosicoes = criarPosicoesFinaisPadrao();
 
     setPosicoes(novasPosicoes);
 
-    const novosResultados = {
-      status: resultadosOficiais?.status || "EM_ANDAMENTO",
+    const novosResultados = normalizarResultadosOficiais(resultadosOficiais, {
       ultima_atualizacao: dataHojeISO(),
-      jogos: resultadosOficiais?.jogos || [],
-      fases_oficiais: {
-        ...FASES_PADRAO,
-        ...(resultadosOficiais?.fases_oficiais || {}),
-      },
       posicoes_finais_oficiais: novasPosicoes,
-    };
+    });
 
     onAtualizarResultados(novosResultados);
 

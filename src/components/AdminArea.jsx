@@ -174,7 +174,10 @@ export default function AdminArea({
       )}
 
       {abaAdmin === "importar" && (
-        <AdminImportPanel onAtualizarResultados={onAtualizarResultados} />
+        <AdminImportPanel
+          resultadosOficiais={resultadosOficiais}
+          onAtualizarResultados={onAtualizarResultados}
+        />
       )}
 
       {abaAdmin === "zerar" && (
