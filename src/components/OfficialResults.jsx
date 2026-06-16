@@ -83,6 +83,23 @@ function temPenaltis(jogo) {
   );
 }
 
+function temPenaltisPreenchidos(jogo) {
+  return (
+    jogo.penaltis_a !== null &&
+    jogo.penaltis_a !== undefined &&
+    jogo.penaltis_b !== null &&
+    jogo.penaltis_b !== undefined
+  );
+}
+
+function temPenaltisIgnorados(jogo) {
+  return (
+    jogoTemPlacar(jogo) &&
+    jogo.gols_a !== jogo.gols_b &&
+    temPenaltisPreenchidos(jogo)
+  );
+}
+
 function confrontoDefinido(jogo) {
   return Boolean(jogo?.selecao_a && jogo?.selecao_b);
 }
@@ -210,6 +227,12 @@ function ResultadoMatchCard({ jogo }) {
         </div>
       )}
 
+      {temPenaltisIgnorados(jogo) && (
+        <div className="resultado-penaltis ignorado">
+          Pênaltis informados, ignorados pela regra
+        </div>
+      )}
+
       <div className="resultado-match-footer">
         <span>Placar</span>
         <strong>{placarTexto(jogo)}</strong>
@@ -297,6 +320,9 @@ export default function OfficialResults({ resultadosOficiais }) {
 
   const jogosComResultado = resultadosOficiais?.jogos || [];
   const jogosEncerrados = jogosComResultado.filter((jogo) => jogo.encerrado).length;
+  const jogosPendentes = jogosPublicos.filter(
+    (jogo) => statusDoJogo(jogo) !== "encerrado"
+  ).length;
   const confrontosDefinidos = jogosPublicos.filter(confrontoDefinido).length;
   const totalClassificados = contarClassificados(fasesOficiais);
   const totalPosicoesFinais = contarPosicoesFinais(posicoesFinais);
@@ -364,6 +390,11 @@ export default function OfficialResults({ resultadosOficiais }) {
         <div className="card resultados-stat">
           <span>Jogos encerrados</span>
           <strong>{jogosEncerrados}</strong>
+        </div>
+
+        <div className="card resultados-stat">
+          <span>Jogos pendentes</span>
+          <strong>{jogosPendentes}</strong>
         </div>
 
         <div className="card resultados-stat">

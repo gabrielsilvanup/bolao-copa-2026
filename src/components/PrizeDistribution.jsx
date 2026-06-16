@@ -8,6 +8,15 @@ import {
   formatarDinheiro,
   posicaoPremiacaoTexto,
 } from "../utils/prizeUtils";
+import { SCORING_RULES } from "../utils/scoringRules";
+
+const FAIXAS_PREMIACAO = [
+  { posicao: "1º lugar", percentual: SCORING_RULES.premiacao.primeiro },
+  { posicao: "2º lugar", percentual: SCORING_RULES.premiacao.segundo },
+  { posicao: "3º lugar", percentual: SCORING_RULES.premiacao.terceiro },
+  { posicao: "4º lugar", percentual: SCORING_RULES.premiacao.quarto },
+  { posicao: "5º lugar", percentual: SCORING_RULES.premiacao.quinto },
+];
 
 export default function PrizeDistribution({
   participantes,
@@ -60,34 +69,30 @@ export default function PrizeDistribution({
         </div>
 
         <div className="premio-faixas">
-          <div>
-            <span>1º lugar</span>
-            <strong>{formatarDinheiro(totalArrecadado * 0.55)}</strong>
-            <small>55%</small>
-          </div>
+          {FAIXAS_PREMIACAO.map((faixa) => (
+            <div
+              key={faixa.posicao}
+              style={{ "--percentual": `${faixa.percentual}%` }}
+            >
+              <span>{faixa.posicao}</span>
+              <strong>
+                {formatarDinheiro(
+                  totalArrecadado * (faixa.percentual / 100)
+                )}
+              </strong>
+              <small>{faixa.percentual}%</small>
+            </div>
+          ))}
 
-          <div>
-            <span>2º lugar</span>
-            <strong>{formatarDinheiro(totalArrecadado * 0.15)}</strong>
-            <small>15%</small>
-          </div>
-
-          <div>
-            <span>3º lugar</span>
-            <strong>{formatarDinheiro(totalArrecadado * 0.11)}</strong>
-            <small>11%</small>
-          </div>
-
-          <div>
-            <span>4º lugar</span>
-            <strong>{formatarDinheiro(totalArrecadado * 0.08)}</strong>
-            <small>8%</small>
-          </div>
-
-          <div>
-            <span>5º lugar</span>
-            <strong>{formatarDinheiro(totalArrecadado * 0.06)}</strong>
-            <small>6%</small>
+          <div
+            className="organizacao"
+            style={{
+              "--percentual": `${SCORING_RULES.premiacao.organizacao}%`,
+            }}
+          >
+            <span>Organização</span>
+            <strong>{formatarDinheiro(valorOrganizacao)}</strong>
+            <small>{SCORING_RULES.premiacao.organizacao}% separado</small>
           </div>
         </div>
 

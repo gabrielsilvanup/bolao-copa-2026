@@ -147,6 +147,10 @@ export default function ParticipantList({
 
           if (temPontuacao && posicao) {
             detalhe = `${posicao}º lugar · ${pontos} pts`;
+
+            if (itemRanking?.empatado) {
+              detalhe = `${detalhe} · empate`;
+            }
           }
 
           const nomeNormalizado = normalizarTexto(participante.participante);

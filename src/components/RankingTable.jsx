@@ -54,14 +54,33 @@ function contarPosicoesFinais(resultadosOficiais) {
   ).length;
 }
 
-function RankingPodiumCard({ item, premio, rankingTemPontos }) {
+function ativarComTeclado(event, onSelecionar) {
+  if (event.key !== "Enter" && event.key !== " ") return;
+
+  event.preventDefault();
+  onSelecionar?.();
+}
+
+function RankingPodiumCard({
+  item,
+  premio,
+  rankingTemPontos,
+  onSelecionar,
+}) {
   if (!item) return null;
 
   const classe = classeMedalha(item.posicao, rankingTemPontos);
   const temPremio = rankingTemPontos && premio && premio.valor > 0;
+  const clicavel = Boolean(onSelecionar);
 
   return (
-    <article className={`ranking-podium-card ${classe}`}>
+    <article
+      className={`ranking-podium-card ${classe}`}
+      onClick={onSelecionar}
+      onKeyDown={(event) => ativarComTeclado(event, onSelecionar)}
+      role={clicavel ? "button" : undefined}
+      tabIndex={clicavel ? 0 : undefined}
+    >
       <div className="ranking-podium-medal">
         {textoMedalha(item.posicao, rankingTemPontos)}
       </div>
@@ -88,12 +107,32 @@ function RankingPodiumCard({ item, premio, rankingTemPontos }) {
   );
 }
 
-function RankingRow({ item, premio, rankingTemPontos }) {
+function RankingRow({
+  item,
+  premio,
+  rankingTemPontos,
+  onSelecionar,
+}) {
   const classe = classeMedalha(item.posicao, rankingTemPontos);
   const temPremio = rankingTemPontos && premio && premio.valor > 0;
+  const clicavel = Boolean(onSelecionar);
+  const classes = [
+    "linha-ranking",
+    classe,
+    item.empatado ? "empatado" : "",
+    temPremio ? "premiado" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <tr className={`linha-ranking ${classe}`}>
+    <tr
+      className={classes}
+      onClick={onSelecionar}
+      onKeyDown={(event) => ativarComTeclado(event, onSelecionar)}
+      role={clicavel ? "button" : undefined}
+      tabIndex={clicavel ? 0 : undefined}
+    >
       <td>
         <div className={`ranking-position-chip ${classe}`}>
           <span>{textoMedalha(item.posicao, rankingTemPontos)}</span>
@@ -109,6 +148,11 @@ function RankingRow({ item, premio, rankingTemPontos }) {
               ? `${item.totalEmpatados} empatados na posição`
               : "Posição isolada"}
           </span>
+
+          <div className="ranking-row-badges">
+            {temPremio && <small className="ranking-badge premio">Premiação</small>}
+            {item.empatado && <small className="ranking-badge empate">Empate</small>}
+          </div>
         </div>
       </td>
 
@@ -153,7 +197,11 @@ function RankingRow({ item, premio, rankingTemPontos }) {
   );
 }
 
-export default function RankingTable({ participantes, resultadosOficiais }) {
+export default function RankingTable({
+  participantes,
+  resultadosOficiais,
+  onSelecionarParticipante,
+}) {
   const [busca, setBusca] = useState("");
 
   const ranking = useMemo(() => {
@@ -164,6 +212,12 @@ export default function RankingTable({ participantes, resultadosOficiais }) {
 
   const totalArrecadado = calcularTotalArrecadado(participantes.length);
   const mapaPremiacao = criarMapaPremiacao(ranking, totalArrecadado);
+  const participantesPorNome = useMemo(() => {
+    return participantes.reduce((mapa, participante) => {
+      mapa[participante.participante] = participante;
+      return mapa;
+    }, {});
+  }, [participantes]);
 
   const jogosEncerrados = contarJogosEncerrados(resultadosOficiais);
   const classificadosLancados = contarFasesComClassificados(resultadosOficiais);
@@ -184,6 +238,14 @@ export default function RankingTable({ participantes, resultadosOficiais }) {
     );
   }, [ranking, busca]);
 
+  function selecionarParticipanteRanking(nome) {
+    const participante = participantesPorNome[nome];
+
+    if (!participante) return;
+
+    onSelecionarParticipante?.(participante);
+  }
+
   return (
     <div className="ranking-pro">
       <section className="card ranking-pro-header">
@@ -192,7 +254,8 @@ export default function RankingTable({ participantes, resultadosOficiais }) {
           <h2>Ranking do Bolão</h2>
           <p>
             Pontuação atualizada automaticamente com placares, avanço de fase,
-            chaveamento e posições finais oficiais.
+            chaveamento e posições finais oficiais. Empates permanecem
+            empatados e dividem as faixas de premiação ocupadas.
           </p>
         </div>
 
@@ -260,6 +323,7 @@ export default function RankingTable({ participantes, resultadosOficiais }) {
               item={item}
               premio={mapaPremiacao[item.participante]}
               rankingTemPontos={rankingTemPontos}
+              onSelecionar={() => selecionarParticipanteRanking(item.participante)}
             />
           ))}
         </section>
@@ -303,6 +367,9 @@ export default function RankingTable({ participantes, resultadosOficiais }) {
                   item={item}
                   premio={mapaPremiacao[item.participante]}
                   rankingTemPontos={rankingTemPontos}
+                  onSelecionar={() =>
+                    selecionarParticipanteRanking(item.participante)
+                  }
                 />
               ))}
             </tbody>

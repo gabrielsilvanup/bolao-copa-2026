@@ -20,13 +20,23 @@ function pontosTexto(pontuacao) {
   return pontuacao.pontos;
 }
 
+function classeFase(fase) {
+  return fase === "grupos" ? "grupos" : "mata";
+}
+
 export default function GamesTable({ jogos, resultadosOficiais }) {
   const mapaResultados = criarMapaResultados(resultadosOficiais);
 
   return (
     <div className="card tabela-card">
       <div className="tabela-topo">
-        <h2>Jogos</h2>
+        <div>
+          <h2>Jogos</h2>
+          <small>
+            Grupos pontuam por resultado e placar; mata-mata pontua por avanço.
+          </small>
+        </div>
+
         <span>{jogos.length} jogos</span>
       </div>
 
@@ -51,9 +61,18 @@ export default function GamesTable({ jogos, resultadosOficiais }) {
               const pontuacao = calcularPontuacaoJogo(jogo, resultadoOficial);
 
               return (
-                <tr key={jogo.jogo}>
+                <tr
+                  key={jogo.jogo}
+                  className={`jogo-row ${classeFase(jogo.fase)} ${
+                    pontuacao.status
+                  }`}
+                >
                   <td>{jogo.jogo}</td>
-                  <td>{formatarFase(jogo.fase)}</td>
+                  <td>
+                    <span className={`fase-pill ${classeFase(jogo.fase)}`}>
+                      {formatarFase(jogo.fase)}
+                    </span>
+                  </td>
                   <td>
                     <TeamName selecao={jogo.selecao_a} />
                   </td>
@@ -69,8 +88,14 @@ export default function GamesTable({ jogos, resultadosOficiais }) {
                       ? `${jogo.penaltis_a} x ${jogo.penaltis_b}`
                       : "-"}
                   </td>
-                  <td className={pontuacao.pontos > 0 ? "pontos" : ""}>
-                    {pontosTexto(pontuacao)}
+                  <td>
+                    <span
+                      className={`pontos-pill ${
+                        pontuacao.pontos > 0 ? "positivo" : pontuacao.status
+                      }`}
+                    >
+                      {pontosTexto(pontuacao)}
+                    </span>
                   </td>
                 </tr>
               );

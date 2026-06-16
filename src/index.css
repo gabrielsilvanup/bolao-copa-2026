@@ -6269,3 +6269,318 @@ td:nth-child(6) {
     font-size: 11px;
   }
 }
+
+/* ETAPA 9 - POLIMENTO DE UI/UX PUBLICO */
+
+.hero-content {
+  display: grid;
+  align-content: center;
+  gap: 16px;
+}
+
+.hero-content .tag,
+.hero-content p {
+  margin: 0;
+}
+
+.hero-rule-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 860px;
+  margin-top: 4px;
+}
+
+.hero-rule-strip span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.resumo {
+  min-width: 240px;
+}
+
+.tab {
+  display: grid;
+  gap: 2px;
+  min-width: 104px;
+  text-align: center;
+}
+
+.tab span {
+  font-size: 14px;
+  line-height: 1.1;
+}
+
+.tab small {
+  color: currentColor;
+  font-size: 10px;
+  font-weight: 800;
+  opacity: 0.68;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tab.ativa small {
+  opacity: 0.82;
+}
+
+.ranking-podium-card[role="button"],
+.ranking-table .linha-ranking[role="button"] {
+  cursor: pointer;
+}
+
+.ranking-podium-card[role="button"]:focus-visible,
+.ranking-table .linha-ranking[role="button"]:focus-visible {
+  outline: 3px solid rgba(246, 196, 69, 0.85);
+  outline-offset: 3px;
+}
+
+.ranking-table .linha-ranking.premiado td {
+  border-top-color: rgba(0, 176, 80, 0.28);
+  border-bottom-color: rgba(0, 176, 80, 0.28);
+}
+
+.ranking-table .linha-ranking.empatado td:first-child {
+  box-shadow: inset 4px 0 0 var(--gold-500);
+}
+
+.ranking-row-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.ranking-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ranking-badge.premio {
+  background: rgba(0, 176, 80, 0.12);
+  color: #08733a;
+}
+
+.ranking-badge.empate {
+  background: rgba(246, 196, 69, 0.22);
+  color: #755000;
+}
+
+.premio-faixas div {
+  position: relative;
+  overflow: hidden;
+}
+
+.premio-faixas div::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: auto;
+  bottom: 0;
+  width: var(--percentual, 0%);
+  height: 5px;
+  background: linear-gradient(90deg, var(--green-500), var(--gold-500));
+}
+
+.premio-faixas .organizacao {
+  background: linear-gradient(180deg, #f8fbff, #eef3fb);
+}
+
+.premio-faixas .organizacao::after {
+  background: var(--navy-950);
+}
+
+.regras-topo {
+  align-items: flex-start;
+}
+
+.regras-intro-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 20px 24px 0;
+}
+
+.regras-intro-grid div {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: linear-gradient(135deg, #ffffff, #f8fbff);
+}
+
+.regras-intro-grid strong {
+  display: block;
+  color: var(--navy-950);
+  font-size: 17px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.regras-intro-grid span {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.regras-bloco.destaque {
+  border-color: rgba(0, 108, 255, 0.32);
+  background:
+    linear-gradient(135deg, rgba(0, 108, 255, 0.08), transparent 42%),
+    #ffffff;
+}
+
+.tabela-topo small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.fase-pill,
+.pontos-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.fase-pill.grupos {
+  background: rgba(0, 108, 255, 0.1);
+  color: var(--blue-600);
+}
+
+.fase-pill.mata {
+  background: rgba(246, 196, 69, 0.22);
+  color: #755000;
+}
+
+.pontos-pill {
+  min-width: 64px;
+  background: #eef3fb;
+  color: var(--muted);
+}
+
+.pontos-pill.positivo {
+  background: rgba(0, 176, 80, 0.12);
+  color: #08733a;
+}
+
+.pontos-pill.mata_mata_por_fase {
+  background: rgba(246, 196, 69, 0.22);
+  color: #755000;
+}
+
+.pontos-pill.pendente,
+.pontos-pill.nao_preenchido {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.jogo-row.mata td:first-child {
+  box-shadow: inset 4px 0 0 var(--gold-500);
+}
+
+.jogo-row.grupos td:first-child {
+  box-shadow: inset 4px 0 0 var(--blue-600);
+}
+
+.resultados-stats-grid {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.resultado-penaltis.ignorado {
+  background: #fff8df;
+  color: #755000;
+  border-color: rgba(246, 196, 69, 0.55);
+}
+
+@media (max-width: 1320px) {
+  .resultados-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1050px) {
+  .regras-intro-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-rule-strip span {
+    min-height: 32px;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero-content {
+    gap: 12px;
+  }
+
+  .hero-rule-strip {
+    gap: 8px;
+  }
+
+  .hero-rule-strip span {
+    flex: 1 1 calc(50% - 8px);
+    justify-content: center;
+    min-width: 136px;
+    padding: 7px 9px;
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .tab {
+    min-width: 96px;
+    padding: 10px 13px;
+  }
+
+  .tab span {
+    font-size: 13px;
+  }
+
+  .tab small {
+    font-size: 9px;
+  }
+
+  .regras-intro-grid,
+  .resultados-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .regras-intro-grid {
+    padding: 16px 16px 0;
+  }
+
+  .ranking-row-badges {
+    margin-top: 6px;
+  }
+}
