@@ -1,6 +1,6 @@
 {
   "status": "EM_ANDAMENTO",
-  "ultima_atualizacao": "2026-06-16",
+  "ultima_atualizacao": "2026-06-17",
   "jogos": [
     {
       "jogo": 1,
@@ -199,6 +199,20 @@
       "encerrado": true
     },
     {
+      "jogo": 15,
+      "fase": "grupos",
+      "selecao_a": "IR Iran",
+      "gols_a": 2,
+      "gols_b": 2,
+      "selecao_b": "New Zealand",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "EMPATE",
+      "vencedor_oficial": null,
+      "perdedor_oficial": null,
+      "encerrado": true
+    },
+    {
       "jogo": 16,
       "fase": "grupos",
       "selecao_a": "Belgium",
@@ -210,6 +224,34 @@
       "resultado_oficial": "EMPATE",
       "vencedor_oficial": null,
       "perdedor_oficial": null,
+      "encerrado": true
+    },
+    {
+      "jogo": 17,
+      "fase": "grupos",
+      "selecao_a": "France",
+      "gols_a": 3,
+      "gols_b": 1,
+      "selecao_b": "Senegal",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "A",
+      "vencedor_oficial": "France",
+      "perdedor_oficial": "Senegal",
+      "encerrado": true
+    },
+    {
+      "jogo": 18,
+      "fase": "grupos",
+      "selecao_a": "Iraq",
+      "gols_a": 1,
+      "gols_b": 4,
+      "selecao_b": "Norway",
+      "penaltis_a": null,
+      "penaltis_b": null,
+      "resultado_oficial": "B",
+      "vencedor_oficial": "Norway",
+      "perdedor_oficial": "Iraq",
       "encerrado": true
     }
   ],
@@ -227,7 +269,7 @@
     "quarto": null
   },
   "chaveamento_oficial": {
-    "ultima_atualizacao": "2026-06-16",
+    "ultima_atualizacao": "2026-06-17",
     "dezesseis_avos": [],
     "oitavas": [
       {
