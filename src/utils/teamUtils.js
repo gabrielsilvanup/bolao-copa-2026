@@ -72,19 +72,92 @@ const SELECOES = {
   Panama: { codigo: "pa", nomePt: "Panamá" },
 };
 
+const APELIDOS_SELECOES = {
+  Alemanha: "Germany",
+  "África do Sul": "South Africa",
+  Argélia: "Algeria",
+  Argentina: "Argentina",
+  "Arábia Saudita": "Saudi Arabia",
+  Austrália: "Australia",
+  Áustria: "Austria",
+  Bélgica: "Belgium",
+  Brasil: "Brazil",
+  "Bósnia e Herzegovina": "Bosnia/Herzeg.",
+  "Cabo Verde": "Cape Verde",
+  Canadá: "Canada",
+  Catar: "Qatar",
+  Colômbia: "Colombia",
+  "Coreia do Sul": "Rep. of Korea",
+  "Costa do Marfim": "Ivory Coast",
+  Croácia: "Croatia",
+  Curaçau: "Curaçao",
+  Egito: "Egypt",
+  Equador: "Ecuador",
+  Escócia: "Scotland",
+  Espanha: "Spain",
+  "Estados Unidos": "USA",
+  França: "France",
+  Gana: "Ghana",
+  Haiti: "Haiti",
+  Holanda: "Netherlands",
+  Inglaterra: "England",
+  Irã: "IR Iran",
+  Iraque: "Iraq",
+  Japão: "Japan",
+  Jordânia: "Jordan",
+  Marrocos: "Morocco",
+  México: "Mexico",
+  Noruega: "Norway",
+  "Nova Zelândia": "New Zealand",
+  Panamá: "Panama",
+  Paraguai: "Paraguay",
+  Portugal: "Portugal",
+  "República da Coreia": "Rep. of Korea",
+  "República Democrática do Congo": "DR Congo",
+  Senegal: "Senegal",
+  Suécia: "Sweden",
+  Suíça: "Switzerland",
+  Tchéquia: "Czech Rep.",
+  Tunísia: "Tunisia",
+  Turquia: "Turkey",
+  Uruguai: "Uruguay",
+  Uzbequistão: "Uzbekistan",
+};
+
+function emojiBandeira(codigo) {
+  if (!codigo) return null;
+
+  const excecoes = {
+    "gb-eng": "🏴",
+    "gb-sct": "🏴",
+  };
+
+  if (excecoes[codigo]) return excecoes[codigo];
+
+  if (!/^[a-z]{2}$/.test(codigo)) return null;
+
+  return codigo
+    .toUpperCase()
+    .split("")
+    .map((letra) => String.fromCodePoint(letra.charCodeAt(0) + 127397))
+    .join("");
+}
+
 export function getSelecaoInfo(selecao) {
   if (!selecao || selecao === "Não preenchido" || selecao === "EMPATE") {
     return null;
   }
 
   const nomeOriginal = String(selecao).trim();
-  const info = SELECOES[nomeOriginal];
+  const chave = APELIDOS_SELECOES[nomeOriginal] || nomeOriginal;
+  const info = SELECOES[chave];
 
   if (!info) {
     return {
       nomeOriginal,
       nomePt: nomeOriginal,
       codigo: null,
+      emoji: null,
       bandeiraUrl: null,
     };
   }
@@ -93,6 +166,7 @@ export function getSelecaoInfo(selecao) {
     nomeOriginal,
     nomePt: info.nomePt,
     codigo: info.codigo,
+    emoji: emojiBandeira(info.codigo),
     bandeiraUrl: `https://flagcdn.com/w40/${info.codigo}.png`,
   };
 }

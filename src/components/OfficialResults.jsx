@@ -1,27 +1,26 @@
 import { useMemo, useState } from "react";
+import {
+  buscaEhJogosDoDia,
+  formatarAgendaJogo,
+  formatarDataBrasilia,
+  getDataHojeBrasilia,
+  nomeMandante,
+  nomeVisitante,
+  textoBuscaCalendario,
+} from "../utils/calendarUtils";
 import { formatarFase } from "../utils/gameUtils";
 import {
   calcularPontuacaoJogo,
   calcularRanking,
 } from "../utils/scoringUtils";
+import { formatarSelecao, getSelecaoInfo } from "../utils/teamUtils";
 import TeamName from "./TeamName";
 
-const FILTROS_FASE = [
+const FILTROS_RAPIDOS = [
   { id: "todos", label: "Todos" },
-  { id: "grupos", label: "Grupos" },
-  { id: "dezesseis_avos", label: "16 avos" },
-  { id: "oitavas", label: "Oitavas" },
-  { id: "quartas", label: "Quartas" },
-  { id: "semifinal", label: "Semifinais" },
-  { id: "terceiro_lugar", label: "3º lugar" },
-  { id: "final", label: "Final" },
-];
-
-const FILTROS_STATUS = [
-  { id: "todos", label: "Todos" },
-  { id: "encerrados", label: "Encerrados" },
-  { id: "definidos", label: "Confrontos definidos" },
-  { id: "aguardando", label: "Aguardando" },
+  { id: "hoje", label: "Jogos de Hoje" },
+  { id: "selecao", label: "Por Seleção" },
+  { id: "busca", label: "Busca" },
 ];
 
 const FASES_CHAVEAMENTO = [
@@ -62,10 +61,39 @@ function normalizarTexto(texto) {
 
 function jogoTemPlacar(jogo) {
   return (
-    jogo.gols_a !== null &&
-    jogo.gols_a !== undefined &&
-    jogo.gols_b !== null &&
-    jogo.gols_b !== undefined
+    jogo?.gols_a !== null &&
+    jogo?.gols_a !== undefined &&
+    jogo?.gols_b !== null &&
+    jogo?.gols_b !== undefined
+  );
+}
+
+function temPenaltis(jogo) {
+  return (
+    jogo?.gols_a !== null &&
+    jogo?.gols_b !== null &&
+    jogo?.gols_a === jogo?.gols_b &&
+    jogo?.penaltis_a !== null &&
+    jogo?.penaltis_a !== undefined &&
+    jogo?.penaltis_b !== null &&
+    jogo?.penaltis_b !== undefined
+  );
+}
+
+function temPenaltisPreenchidos(jogo) {
+  return (
+    jogo?.penaltis_a !== null &&
+    jogo?.penaltis_a !== undefined &&
+    jogo?.penaltis_b !== null &&
+    jogo?.penaltis_b !== undefined
+  );
+}
+
+function temPenaltisIgnorados(jogo) {
+  return (
+    jogoTemPlacar(jogo) &&
+    jogo.gols_a !== jogo.gols_b &&
+    temPenaltisPreenchidos(jogo)
   );
 }
 
@@ -85,63 +113,57 @@ function placarComPenaltisTexto(jogo) {
   return `${placar} (${jogo.penaltis_a} x ${jogo.penaltis_b})`;
 }
 
-function temPenaltis(jogo) {
-  return (
-    jogo.gols_a !== null &&
-    jogo.gols_b !== null &&
-    jogo.gols_a === jogo.gols_b &&
-    jogo.penaltis_a !== null &&
-    jogo.penaltis_a !== undefined &&
-    jogo.penaltis_b !== null &&
-    jogo.penaltis_b !== undefined
-  );
-}
+function resultadoOficialTexto(jogo) {
+  if (!jogo?.encerrado || !jogoTemPlacar(jogo)) return "Pendente";
 
-function temPenaltisPreenchidos(jogo) {
-  return (
-    jogo.penaltis_a !== null &&
-    jogo.penaltis_a !== undefined &&
-    jogo.penaltis_b !== null &&
-    jogo.penaltis_b !== undefined
-  );
-}
-
-function temPenaltisIgnorados(jogo) {
-  return (
-    jogoTemPlacar(jogo) &&
-    jogo.gols_a !== jogo.gols_b &&
-    temPenaltisPreenchidos(jogo)
-  );
+  return placarComPenaltisTexto(jogo);
 }
 
 function confrontoDefinido(jogo) {
-  return Boolean(jogo?.selecao_a && jogo?.selecao_b);
+  if (jogo?.selecao_a && jogo?.selecao_b) return true;
+
+  return Boolean(
+    jogo?.fase === "grupos" && jogo?.mandante && jogo?.visitante
+  );
 }
 
 function statusDoJogo(jogo) {
-  if (jogo.encerrado) return "encerrado";
+  if (jogo?.encerrado) return "encerrado";
   if (confrontoDefinido(jogo)) return "definido";
 
   return "aguardando";
 }
 
 function textoStatusJogo(jogo) {
-  const status = statusDoJogo(jogo);
+  if (jogo?.encerrado) return "Encerrado";
+  if (jogo?.fase === "grupos") return "Pendente";
+  if (confrontoDefinido(jogo)) return "Definido";
 
-  if (status === "encerrado") return "Encerrado";
-  if (status === "definido") return "Confronto definido";
-
-  return "Aguardando";
+  return "A definir";
 }
 
-function vencedorTexto(jogo) {
-  if (!jogo.encerrado) return textoStatusJogo(jogo);
+function rotuloGrupo(jogo) {
+  return jogo?.grupo ? `Grupo ${jogo.grupo}` : formatarFase(jogo?.fase);
+}
 
-  if (jogo.resultado_oficial === "EMPATE" && !jogo.vencedor_oficial) {
-    return "Empate";
+function rotuloConfronto(jogo) {
+  return `${nomeMandante(jogo)} x ${nomeVisitante(jogo)}`;
+}
+
+function jogoEmBusca(jogo, termo) {
+  if (!termo) return true;
+
+  if (buscaEhJogosDoDia(termo)) {
+    return jogo.data === getDataHojeBrasilia();
   }
 
-  return jogo.vencedor_oficial || "Não informado";
+  const conteudo = normalizarTexto(
+    [textoBuscaCalendario(jogo), formatarFase(jogo.fase)]
+      .filter(Boolean)
+      .join(" ")
+  );
+
+  return conteudo.includes(termo);
 }
 
 function getChaveamentoLista(resultadosOficiais) {
@@ -168,14 +190,33 @@ function getChaveamentoLista(resultadosOficiais) {
   });
 }
 
-function montarJogosPublicos(resultadosOficiais) {
+function montarJogosPublicos(resultadosOficiais, calendarioOficial = []) {
   const jogosComResultado = resultadosOficiais?.jogos || [];
   const jogosChaveamento = getChaveamentoLista(resultadosOficiais);
-
   const mapaFinal = {};
 
+  calendarioOficial.forEach((jogo) => {
+    mapaFinal[Number(jogo.jogo)] = {
+      ...jogo,
+      selecao_a: null,
+      selecao_b: null,
+      gols_a: null,
+      gols_b: null,
+      penaltis_a: null,
+      penaltis_b: null,
+      resultado_oficial: null,
+      vencedor_oficial: null,
+      perdedor_oficial: null,
+      encerrado: false,
+      origem: "calendario",
+    };
+  });
+
   jogosChaveamento.forEach((jogo) => {
-    mapaFinal[Number(jogo.jogo)] = jogo;
+    mapaFinal[Number(jogo.jogo)] = {
+      ...mapaFinal[Number(jogo.jogo)],
+      ...jogo,
+    };
   });
 
   jogosComResultado.forEach((jogo) => {
@@ -191,6 +232,68 @@ function montarJogosPublicos(resultadosOficiais) {
   );
 }
 
+function agruparJogosPorData(jogos) {
+  const grupos = jogos.reduce((resultado, jogo) => {
+    const data = jogo.data || "sem-data";
+
+    if (!resultado[data]) {
+      resultado[data] = [];
+    }
+
+    resultado[data].push(jogo);
+    return resultado;
+  }, {});
+
+  return Object.entries(grupos)
+    .sort(([dataA], [dataB]) => dataA.localeCompare(dataB))
+    .map(([data, lista]) => ({
+      data,
+      jogos: lista.sort((a, b) => {
+        const hora = String(a.hora_brasilia || "").localeCompare(
+          String(b.hora_brasilia || "")
+        );
+
+        if (hora !== 0) return hora;
+
+        return Number(a.jogo) - Number(b.jogo);
+      }),
+    }));
+}
+
+function getInfoSelecao(selecao) {
+  const info = getSelecaoInfo(selecao);
+
+  if (!info?.codigo) return null;
+
+  return info;
+}
+
+function montarSelecoes(jogos) {
+  const mapa = {};
+
+  jogos.forEach((jogo) => {
+    [nomeMandante(jogo), nomeVisitante(jogo)].forEach((selecao) => {
+      const info = getInfoSelecao(selecao);
+
+      if (!info) return;
+
+      mapa[info.nomePt] = {
+        id: info.nomePt,
+        nome: info.nomePt,
+        original: info.nomeOriginal,
+      };
+    });
+  });
+
+  return Object.values(mapa).sort((a, b) => a.nome.localeCompare(b.nome));
+}
+
+function jogoDaSelecao(jogo, nomeSelecao) {
+  return [nomeMandante(jogo), nomeVisitante(jogo)].some(
+    (selecao) => formatarSelecao(selecao) === nomeSelecao
+  );
+}
+
 function contarClassificados(fases) {
   return Object.values(fases || {}).reduce((total, lista) => {
     if (!Array.isArray(lista)) return total;
@@ -203,36 +306,186 @@ function contarPosicoesFinais(posicoes) {
   return Object.values(posicoes || {}).filter(Boolean).length;
 }
 
-function ResultadoMatchCard({ jogo }) {
-  const status = statusDoJogo(jogo);
-  const vencedor = vencedorTexto(jogo);
+function buscarPalpite(participante, jogoId) {
+  return participante?.jogos?.find((jogo) => Number(jogo.jogo) === Number(jogoId));
+}
 
+function textoPontos(calculo, jogo) {
+  if (!jogo?.encerrado) return "Pendente";
+  if (!calculo) return "-";
+  if (calculo.status === "mata_mata_por_fase") return "Por fase";
+  if (calculo.status === "pendente") return "Pendente";
+  if (calculo.status === "nao_preenchido") return "-";
+
+  return `${calculo.pontos} pts`;
+}
+
+function FiltrosRapidos({
+  modoFiltro,
+  busca,
+  onBuscaChange,
+  onSelecionarModo,
+}) {
   return (
-    <article className={`resultado-match-card ${status}`}>
-      <div className="resultado-match-top">
-        <div>
-          <span>Jogo {jogo.jogo}</span>
-          <strong>
-            {formatarFase(jogo.fase)}
-            {jogo.slot_a && jogo.slot_b ? ` · ${jogo.slot_a} x ${jogo.slot_b}` : ""}
-          </strong>
-        </div>
-
-        <div className={`resultado-status-pill ${status}`}>
-          {textoStatusJogo(jogo)}
-        </div>
+    <section className="card resultados-quick-card">
+      <div className="resultados-quick-tabs">
+        {FILTROS_RAPIDOS.map((filtro) => (
+          <button
+            key={filtro.id}
+            type="button"
+            className={modoFiltro === filtro.id ? "ativo" : ""}
+            onClick={() => onSelecionarModo(filtro.id)}
+          >
+            {filtro.label}
+          </button>
+        ))}
       </div>
 
-      <div className="resultado-scoreboard">
-        <div className="resultado-team-row">
-          <TeamName selecao={jogo.selecao_a} />
-          <strong>{jogoTemPlacar(jogo) ? jogo.gols_a : "-"}</strong>
+      {modoFiltro === "busca" && (
+        <input
+          type="search"
+          value={busca}
+          onChange={(event) => onBuscaChange(event.target.value)}
+          placeholder="Jogo, seleção, grupo, fase ou data"
+        />
+      )}
+    </section>
+  );
+}
+
+function SelecoesGrid({
+  selecoes,
+  selecaoSelecionada,
+  onSelecionarSelecao,
+}) {
+  return (
+    <section className="card selecao-picker-card">
+      <div className="selecao-picker-grid">
+        {selecoes.map((selecao) => (
+          <button
+            key={selecao.id}
+            type="button"
+            className={selecaoSelecionada === selecao.nome ? "ativo" : ""}
+            onClick={() => onSelecionarSelecao(selecao.nome)}
+          >
+            <TeamName selecao={selecao.nome} />
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function JogoCalendarioCard({ jogo, selecionado, onSelecionarJogo }) {
+  const status = statusDoJogo(jogo);
+
+  return (
+    <button
+      type="button"
+      className={`resultado-game-card ${status} ${
+        selecionado ? "selecionado" : ""
+      }`}
+      onClick={() => onSelecionarJogo(jogo.jogo)}
+    >
+      <span className="resultado-game-numero">Jogo {jogo.jogo}</span>
+
+      <span className="resultado-game-meta">
+        {rotuloGrupo(jogo)} · {jogo.hora_brasilia || "--:--"}
+      </span>
+
+      <strong>
+        <TeamName selecao={nomeMandante(jogo)} />
+        <small>x</small>
+        <TeamName selecao={nomeVisitante(jogo)} />
+      </strong>
+
+      <span className={`resultado-game-status ${status}`}>
+        {textoStatusJogo(jogo)}
+      </span>
+    </button>
+  );
+}
+
+function JogosPorData({
+  grupos,
+  jogoSelecionado,
+  onSelecionarJogo,
+  modoFiltro,
+  onVoltarTodos,
+}) {
+  if (grupos.length === 0) {
+    return (
+      <section className="card resultado-empty rapido">
+        <strong>Nenhum jogo encontrado</strong>
+        <span>
+          {modoFiltro === "hoje"
+            ? "Não há jogos hoje no calendário."
+            : "Ajuste o filtro ou a busca."}
+        </span>
+
+        {modoFiltro === "hoje" && (
+          <button type="button" onClick={onVoltarTodos}>
+            Ver todos
+          </button>
+        )}
+      </section>
+    );
+  }
+
+  return (
+    <section className="resultado-dia-lista">
+      {grupos.map((grupo) => (
+        <div key={grupo.data} className="resultado-dia-grupo">
+          <div className="resultado-dia-header">
+            <strong>{formatarDataBrasilia(grupo.data)}</strong>
+            <span>{grupo.jogos.length} jogo(s)</span>
+          </div>
+
+          <div className="resultado-game-grid">
+            {grupo.jogos.map((jogo) => (
+              <JogoCalendarioCard
+                key={jogo.jogo}
+                jogo={jogo}
+                selecionado={Number(jogoSelecionado?.jogo) === Number(jogo.jogo)}
+                onSelecionarJogo={onSelecionarJogo}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function PainelJogoSelecionado({ jogo, ranking }) {
+  if (!jogo) return null;
+
+  const palpites = ranking.map((item) => {
+    const palpite = buscarPalpite(item.dados, jogo.jogo);
+    const calculo = palpite ? calcularPontuacaoJogo(palpite, jogo) : null;
+
+    return {
+      itemRanking: item,
+      palpite,
+      calculo,
+    };
+  });
+
+  return (
+    <section className="card jogo-consulta-card">
+      <div className="jogo-consulta-head">
+        <div>
+          <span>Jogo {jogo.jogo}</span>
+          <strong>{rotuloConfronto(jogo)}</strong>
         </div>
 
-        <div className="resultado-team-row">
-          <TeamName selecao={jogo.selecao_b} />
-          <strong>{jogoTemPlacar(jogo) ? jogo.gols_b : "-"}</strong>
-        </div>
+        <em>{textoStatusJogo(jogo)}</em>
+      </div>
+
+      <div className="jogo-consulta-meta">
+        <span>{rotuloGrupo(jogo)}</span>
+        <span>{formatarAgendaJogo(jogo)}</span>
+        <span>{resultadoOficialTexto(jogo)}</span>
       </div>
 
       {temPenaltis(jogo) && (
@@ -247,25 +500,73 @@ function ResultadoMatchCard({ jogo }) {
         </div>
       )}
 
-      <div className="resultado-match-footer">
-        <span>Placar</span>
-        <strong>{placarTexto(jogo)}</strong>
+      <div className="jogo-palpite-lista">
+        {palpites.map(({ itemRanking, palpite, calculo }) => (
+          <div key={itemRanking.participante} className="jogo-palpite-row">
+            <span>{itemRanking.posicao}º</span>
+            <strong>{itemRanking.participante}</strong>
+            <em>{palpite ? placarComPenaltisTexto(palpite) : "-"}</em>
+            <small>{textoPontos(calculo, jogo)}</small>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ComparativoSelecao({ selecao, jogos, ranking }) {
+  if (!selecao || jogos.length === 0) return null;
+
+  return (
+    <section className="card selecao-comparativo-card">
+      <div className="resultados-section-header compacto">
+        <div>
+          <p className="tag">Por seleção</p>
+          <h2>{selecao}</h2>
+        </div>
+
+        <span>{jogos.length} jogo(s)</span>
       </div>
 
-      <div className="resultado-vencedor">
-        <span>{jogo.encerrado ? "Vencedor" : "Situação"}</span>
-        <strong>
-          {vencedor === "Empate" ||
-          vencedor === "Confronto definido" ||
-          vencedor === "Aguardando" ||
-          vencedor === "Não informado" ? (
-            vencedor
-          ) : (
-            <TeamName selecao={vencedor} />
-          )}
-        </strong>
+      <div className="selecao-comparativo-wrap">
+        <table className="selecao-comparativo-table">
+          <thead>
+            <tr>
+              <th>Pos.</th>
+              <th>Participante</th>
+              {jogos.map((jogo) => (
+                <th key={jogo.jogo}>
+                  J{jogo.jogo}
+                  <small>{formatarAgendaJogo(jogo)}</small>
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {ranking.map((item) => (
+              <tr key={item.participante}>
+                <td>{item.posicao}º</td>
+                <td>{item.participante}</td>
+                {jogos.map((jogo) => {
+                  const palpite = buscarPalpite(item.dados, jogo.jogo);
+                  const calculo = palpite
+                    ? calcularPontuacaoJogo(palpite, jogo)
+                    : null;
+
+                  return (
+                    <td key={`${item.participante}-${jogo.jogo}`}>
+                      <span>{palpite ? placarComPenaltisTexto(palpite) : "-"}</span>
+                      <small>{textoPontos(calculo, jogo)}</small>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </article>
+    </section>
   );
 }
 
@@ -286,20 +587,18 @@ function ChaveamentoFase({ fase, jogos }) {
           <div key={`chave-${jogo.jogo}`} className="resultado-chaveamento-item">
             <div>
               <span>Jogo {jogo.jogo}</span>
-              <strong>
-                {jogo.slot_a && jogo.slot_b
-                  ? `${jogo.slot_a} x ${jogo.slot_b}`
-                  : formatarFase(jogo.fase)}
-              </strong>
+              <strong>{rotuloConfronto(jogo)}</strong>
             </div>
 
             <div>
-              <TeamName selecao={jogo.selecao_a} />
+              <TeamName selecao={nomeMandante(jogo)} />
               <small>x</small>
-              <TeamName selecao={jogo.selecao_b} />
+              <TeamName selecao={nomeVisitante(jogo)} />
             </div>
 
-            <em>{textoStatusJogo(jogo)}</em>
+            <em>
+              {formatarAgendaJogo(jogo)} · {jogo.sede || textoStatusJogo(jogo)}
+            </em>
           </div>
         ))}
       </div>
@@ -319,185 +618,91 @@ function PosicaoFinalCard({ posicao, selecao }) {
   );
 }
 
-function rotuloJogoConsulta(jogo) {
-  const selecaoA = jogo.selecao_a || jogo.slot_a || "A definir";
-  const selecaoB = jogo.selecao_b || jogo.slot_b || "A definir";
-
-  return `Jogo ${jogo.jogo} - ${selecaoA} x ${selecaoB}`;
-}
-
-function pontosConsultaTexto(calculo) {
-  if (!calculo) return "-";
-  if (calculo.status === "mata_mata_por_fase") return "fase";
-  if (calculo.status === "pendente") return "-";
-  if (calculo.status === "nao_preenchido") return "-";
-
-  return calculo.pontos;
-}
-
-function ConsultaJogo({
-  participantes,
+export default function OfficialResults({
+  participantes = [],
   resultadosOficiais,
-  jogosPublicos,
+  calendarioOficial = [],
 }) {
+  const [modoFiltro, setModoFiltro] = useState("todos");
+  const [busca, setBusca] = useState("");
+  const [selecaoSelecionada, setSelecaoSelecionada] = useState("");
   const [jogoSelecionadoId, setJogoSelecionadoId] = useState("");
+
+  const jogosPublicos = useMemo(
+    () => montarJogosPublicos(resultadosOficiais, calendarioOficial),
+    [resultadosOficiais, calendarioOficial]
+  );
 
   const ranking = useMemo(() => {
     return calcularRanking(participantes, resultadosOficiais);
   }, [participantes, resultadosOficiais]);
 
-  const jogoSelecionado = useMemo(() => {
-    const id = Number(jogoSelecionadoId);
+  const selecoes = useMemo(() => montarSelecoes(jogosPublicos), [jogosPublicos]);
+  const selecaoAtiva = selecaoSelecionada || selecoes[0]?.nome || "";
 
-    if (id) {
-      return jogosPublicos.find((jogo) => Number(jogo.jogo) === id) || null;
+  const jogosDaSelecao = useMemo(() => {
+    if (!selecaoAtiva) return [];
+
+    return jogosPublicos.filter((jogo) => jogoDaSelecao(jogo, selecaoAtiva));
+  }, [jogosPublicos, selecaoAtiva]);
+
+  const jogosFiltrados = useMemo(() => {
+    if (modoFiltro === "hoje") {
+      const hoje = getDataHojeBrasilia();
+      return jogosPublicos.filter((jogo) => jogo.data === hoje);
     }
 
-    return jogosPublicos[0] || null;
-  }, [jogosPublicos, jogoSelecionadoId]);
+    if (modoFiltro === "selecao") {
+      return jogosDaSelecao;
+    }
 
-  const palpites = useMemo(() => {
-    if (!jogoSelecionado) return [];
+    if (modoFiltro === "busca") {
+      const termo = normalizarTexto(busca);
+      return jogosPublicos.filter((jogo) => jogoEmBusca(jogo, termo));
+    }
 
-    return ranking.map((item) => {
-      const palpite = item.dados.jogos.find(
-        (jogo) => Number(jogo.jogo) === Number(jogoSelecionado.jogo)
+    return jogosPublicos;
+  }, [busca, jogosDaSelecao, jogosPublicos, modoFiltro]);
+
+  const jogoSelecionado = useMemo(() => {
+    if (jogoSelecionadoId) {
+      return (
+        jogosPublicos.find(
+          (jogo) => Number(jogo.jogo) === Number(jogoSelecionadoId)
+        ) || null
       );
+    }
 
-      const calculo = palpite
-        ? calcularPontuacaoJogo(palpite, jogoSelecionado)
-        : null;
+    return jogosFiltrados[0] || null;
+  }, [jogoSelecionadoId, jogosFiltrados, jogosPublicos]);
 
-      return {
-        itemRanking: item,
-        palpite,
-        calculo,
-      };
-    });
-  }, [ranking, jogoSelecionado]);
-
-  return (
-    <section className="card consulta-jogo-card">
-      <div className="consulta-jogo-top">
-        <div>
-          <p className="tag">Consulta por jogo</p>
-          <h2>Palpites do jogo</h2>
-        </div>
-
-        <select
-          value={jogoSelecionado?.jogo || ""}
-          onChange={(event) => setJogoSelecionadoId(event.target.value)}
-        >
-          {jogosPublicos.map((jogo) => (
-            <option key={jogo.jogo} value={jogo.jogo}>
-              {rotuloJogoConsulta(jogo)}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {jogoSelecionado ? (
-        <>
-          <div className="consulta-jogo-score">
-            <span>Jogo {jogoSelecionado.jogo}</span>
-            <strong>
-              <TeamName selecao={jogoSelecionado.selecao_a} />{" "}
-              {placarComPenaltisTexto(jogoSelecionado)}{" "}
-              <TeamName selecao={jogoSelecionado.selecao_b} />
-            </strong>
-            <em>{formatarFase(jogoSelecionado.fase)}</em>
-          </div>
-
-          <div className="consulta-palpite-lista">
-            {palpites.map(({ itemRanking, palpite, calculo }) => (
-              <div key={itemRanking.participante} className="consulta-palpite-row">
-                <span className="consulta-posicao">{itemRanking.posicao}º</span>
-
-                <strong>{itemRanking.participante}</strong>
-
-                <span className="consulta-palpite-placar">
-                  {palpite ? placarComPenaltisTexto(palpite) : "-"}
-                </span>
-
-                <span className="consulta-oficial">
-                  {placarComPenaltisTexto(jogoSelecionado)}
-                </span>
-
-                <em>{pontosConsultaTexto(calculo)}</em>
-              </div>
-            ))}
-          </div>
-        </>
-      ) : (
-        <div className="resultado-empty">
-          <strong>Nenhum jogo disponível</strong>
-          <span>Cadastre resultados ou gere o chaveamento oficial.</span>
-        </div>
-      )}
-    </section>
-  );
-}
-
-export default function OfficialResults({
-  participantes = [],
-  resultadosOficiais,
-}) {
-  const [faseSelecionada, setFaseSelecionada] = useState("todos");
-  const [statusSelecionado, setStatusSelecionado] = useState("todos");
-  const [busca, setBusca] = useState("");
-
-  const jogosPublicos = useMemo(
-    () => montarJogosPublicos(resultadosOficiais),
-    [resultadosOficiais]
+  const gruposPorData = useMemo(
+    () => agruparJogosPorData(jogosFiltrados),
+    [jogosFiltrados]
   );
 
   const fasesOficiais = resultadosOficiais?.fases_oficiais || {};
   const posicoesFinais = resultadosOficiais?.posicoes_finais_oficiais || {};
-
   const jogosComResultado = resultadosOficiais?.jogos || [];
   const jogosEncerrados = jogosComResultado.filter((jogo) => jogo.encerrado).length;
-  const jogosPendentes = jogosPublicos.filter(
-    (jogo) => statusDoJogo(jogo) !== "encerrado"
-  ).length;
-  const confrontosDefinidos = jogosPublicos.filter(confrontoDefinido).length;
+  const jogosPendentes = jogosPublicos.filter((jogo) => !jogo.encerrado).length;
+  const jogosMataMata = jogosPublicos.filter((jogo) => jogo.fase !== "grupos").length;
   const totalClassificados = contarClassificados(fasesOficiais);
   const totalPosicoesFinais = contarPosicoesFinais(posicoesFinais);
 
-  const jogosFiltrados = useMemo(() => {
-    const termo = normalizarTexto(busca);
+  function selecionarModo(id) {
+    setModoFiltro(id);
+    setJogoSelecionadoId("");
 
-    return jogosPublicos.filter((jogo) => {
-      const status = statusDoJogo(jogo);
+    if (id !== "busca") {
+      setBusca("");
+    }
+  }
 
-      if (faseSelecionada !== "todos" && jogo.fase !== faseSelecionada) {
-        return false;
-      }
-
-      if (statusSelecionado === "encerrados" && status !== "encerrado") {
-        return false;
-      }
-
-      if (statusSelecionado === "definidos" && status !== "definido") {
-        return false;
-      }
-
-      if (statusSelecionado === "aguardando" && status !== "aguardando") {
-        return false;
-      }
-
-      if (!termo) return true;
-
-      const conteudo = normalizarTexto(
-        `${jogo.jogo} ${jogo.fase} ${jogo.slot_a || ""} ${
-          jogo.slot_b || ""
-        } ${jogo.selecao_a || ""} ${jogo.selecao_b || ""} ${
-          jogo.vencedor_oficial || ""
-        }`
-      );
-
-      return conteudo.includes(termo);
-    });
-  }, [jogosPublicos, faseSelecionada, statusSelecionado, busca]);
+  function selecionarSelecao(selecao) {
+    setSelecaoSelecionada(selecao);
+    setJogoSelecionadoId("");
+  }
 
   return (
     <div className="resultados-pro">
@@ -508,7 +713,12 @@ export default function OfficialResults({
         </div>
 
         <div className="card resultados-stat">
-          <span>Cadastrados</span>
+          <span>Calendário</span>
+          <strong>{jogosPublicos.length}</strong>
+        </div>
+
+        <div className="card resultados-stat">
+          <span>Resultados</span>
           <strong>{jogosComResultado.length}</strong>
         </div>
 
@@ -523,16 +733,43 @@ export default function OfficialResults({
         </div>
 
         <div className="card resultados-stat">
-          <span>Definidos</span>
-          <strong>{confrontosDefinidos}</strong>
+          <span>Mata-mata</span>
+          <strong>{jogosMataMata}</strong>
         </div>
       </section>
 
-      <ConsultaJogo
-        participantes={participantes}
-        resultadosOficiais={resultadosOficiais}
-        jogosPublicos={jogosPublicos}
+      <FiltrosRapidos
+        modoFiltro={modoFiltro}
+        busca={busca}
+        onBuscaChange={setBusca}
+        onSelecionarModo={selecionarModo}
       />
+
+      {modoFiltro === "selecao" && (
+        <SelecoesGrid
+          selecoes={selecoes}
+          selecaoSelecionada={selecaoAtiva}
+          onSelecionarSelecao={selecionarSelecao}
+        />
+      )}
+
+      <PainelJogoSelecionado jogo={jogoSelecionado} ranking={ranking} />
+
+      <JogosPorData
+        grupos={gruposPorData}
+        jogoSelecionado={jogoSelecionado}
+        onSelecionarJogo={setJogoSelecionadoId}
+        modoFiltro={modoFiltro}
+        onVoltarTodos={() => selecionarModo("todos")}
+      />
+
+      {modoFiltro === "selecao" && (
+        <ComparativoSelecao
+          selecao={selecaoAtiva}
+          jogos={jogosDaSelecao}
+          ranking={ranking}
+        />
+      )}
 
       <section className="resultados-stats-grid compacta">
         <div className="card resultados-stat">
@@ -549,73 +786,11 @@ export default function OfficialResults({
       <section className="card resultados-section">
         <div className="resultados-section-header">
           <div>
-            <p className="tag">Placares e confrontos</p>
-            <h2>Jogos oficiais</h2>
-          </div>
-
-          <span>{jogosFiltrados.length} jogo(s)</span>
-        </div>
-
-        <div className="resultados-filtros">
-          <input
-            type="text"
-            value={busca}
-            onChange={(event) => setBusca(event.target.value)}
-            placeholder="Buscar jogo, seleção, fase ou slot..."
-          />
-
-          <div className="resultados-filtro-grupo">
-            {FILTROS_FASE.map((filtro) => (
-              <button
-                key={filtro.id}
-                type="button"
-                className={faseSelecionada === filtro.id ? "ativo" : ""}
-                onClick={() => setFaseSelecionada(filtro.id)}
-              >
-                {filtro.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="resultados-filtro-grupo status">
-            {FILTROS_STATUS.map((filtro) => (
-              <button
-                key={filtro.id}
-                type="button"
-                className={statusSelecionado === filtro.id ? "ativo" : ""}
-                onClick={() => setStatusSelecionado(filtro.id)}
-              >
-                {filtro.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {jogosFiltrados.length === 0 ? (
-          <div className="resultado-empty">
-            <strong>Nenhum jogo encontrado</strong>
-            <span>
-              Cadastre placares no Admin, gere o chaveamento ou ajuste os
-              filtros de busca.
-            </span>
-          </div>
-        ) : (
-          <div className="resultado-matches-grid">
-            {jogosFiltrados.map((jogo) => (
-              <ResultadoMatchCard key={jogo.jogo} jogo={jogo} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="card resultados-section">
-        <div className="resultados-section-header">
-          <div>
             <p className="tag">Mata-mata</p>
             <h2>Chaveamento oficial</h2>
           </div>
 
-          <span>{confrontosDefinidos} confrontos definidos</span>
+          <span>{jogosMataMata} jogos no calendário</span>
         </div>
 
         <div className="resultado-chaveamento">
@@ -640,10 +815,10 @@ export default function OfficialResults({
         </div>
 
         <div className="resultado-classificados-resumo">
-          {Object.entries(fasesOficiais).map(([fase, selecoes]) => (
+          {Object.entries(fasesOficiais).map(([fase, selecoesFase]) => (
             <div key={fase} className="resultado-classificados-resumo-card">
               <span>{formatarFase(fase)}</span>
-              <strong>{Array.isArray(selecoes) ? selecoes.length : 0}</strong>
+              <strong>{Array.isArray(selecoesFase) ? selecoesFase.length : 0}</strong>
             </div>
           ))}
         </div>

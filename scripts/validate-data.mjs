@@ -17,6 +17,12 @@ const ARQUIVO_RESULTADOS = path.join(
   "data",
   "resultados-oficiais.json"
 );
+const ARQUIVO_CALENDARIO = path.join(
+  ROOT_DIR,
+  "public",
+  "data",
+  "calendario-oficial.json"
+);
 
 const TOTAL_PARTICIPANTES_ESPERADO = 37;
 const TOTAL_JOGOS_ESPERADO = 104;
@@ -34,6 +40,27 @@ const CAMPOS_PARTICIPANTE_OBRIGATORIOS = [
 
 const CAMPOS_PLACAR = ["gols_a", "gols_b", "penaltis_a", "penaltis_b"];
 const CAMPOS_SELECAO = ["selecao_a", "selecao_b"];
+const CAMPOS_CALENDARIO_OBRIGATORIOS = [
+  "jogo",
+  "fase",
+  "grupo",
+  "data",
+  "hora_brasilia",
+  "timezone",
+  "mandante",
+  "visitante",
+  "sede",
+];
+const CAMPOS_RESULTADO_PROIBIDOS_NO_CALENDARIO = [
+  "gols_a",
+  "gols_b",
+  "penaltis_a",
+  "penaltis_b",
+  "resultado_oficial",
+  "vencedor_oficial",
+  "perdedor_oficial",
+  "encerrado",
+];
 
 const CONTAGEM_FASES_ESPERADA = {
   grupos: 72,
@@ -55,6 +82,60 @@ const CHAVES_RESULTADOS_OFICIAIS = [
 ];
 
 const LIMITE_DETALHES = 50;
+const DATA_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const HORA_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+const NOMES_CALENDARIO_PARA_BOLAO = {
+  "África do Sul": "South Africa",
+  Alemanha: "Germany",
+  Argélia: "Algeria",
+  Argentina: "Argentina",
+  "Arábia Saudita": "Saudi Arabia",
+  Austrália: "Australia",
+  Áustria: "Austria",
+  Bélgica: "Belgium",
+  Brasil: "Brazil",
+  "Bósnia e Herzegovina": "Bosnia/Herzeg.",
+  "Cabo Verde": "Cape Verde",
+  Canadá: "Canada",
+  Catar: "Qatar",
+  Colômbia: "Colombia",
+  "Coreia do Sul": "Rep. of Korea",
+  "Costa do Marfim": "Ivory Coast",
+  Croácia: "Croatia",
+  Curaçau: "Curaçao",
+  Egito: "Egypt",
+  Equador: "Ecuador",
+  Escócia: "Scotland",
+  Espanha: "Spain",
+  "Estados Unidos": "USA",
+  França: "France",
+  Gana: "Ghana",
+  Haiti: "Haiti",
+  Holanda: "Netherlands",
+  Inglaterra: "England",
+  Irã: "IR Iran",
+  Iraque: "Iraq",
+  Japão: "Japan",
+  Jordânia: "Jordan",
+  Marrocos: "Morocco",
+  México: "Mexico",
+  Noruega: "Norway",
+  "Nova Zelândia": "New Zealand",
+  Panamá: "Panama",
+  Paraguai: "Paraguay",
+  Portugal: "Portugal",
+  "República da Coreia": "Rep. of Korea",
+  "República Democrática do Congo": "DR Congo",
+  Senegal: "Senegal",
+  Suécia: "Sweden",
+  Suíça: "Switzerland",
+  Tchéquia: "Czech Rep.",
+  Tunísia: "Tunisia",
+  Turquia: "Turkey",
+  Uruguai: "Uruguay",
+  Uzbequistão: "Uzbekistan",
+};
 
 const relatorio = {
   erros: [],
@@ -62,6 +143,7 @@ const relatorio = {
   resumo: {
     participantes: 0,
     jogosPalpites: 0,
+    jogosCalendario: 0,
     jogosOficiais: 0,
   },
 };
@@ -261,13 +343,13 @@ function validarContagemFases(arquivo, local, fases) {
 function validarPalpites() {
   const dados = lerJson(ARQUIVO_PALPITES);
 
-  if (!dados) return;
+  if (!dados) return null;
 
   validarStringsVazias(dados, ARQUIVO_PALPITES, "$");
 
   if (!Array.isArray(dados)) {
     adicionarErro(ARQUIVO_PALPITES, "$", "Raiz deve ser um array.");
-    return;
+    return null;
   }
 
   relatorio.resumo.participantes = dados.length;
@@ -348,6 +430,198 @@ function validarPalpites() {
     validarIdsJogos(ARQUIVO_PALPITES, `${localParticipante}.jogos`, idsEncontrados);
     validarContagemFases(ARQUIVO_PALPITES, `${localParticipante}.jogos`, fases);
   });
+
+  return dados;
+}
+
+function validarDataCalendario(valor, arquivo, local) {
+  if (typeof valor !== "string" || !DATA_REGEX.test(valor)) {
+    adicionarErro(arquivo, local, "Data deve estar em YYYY-MM-DD.");
+    return;
+  }
+
+  const data = new Date(`${valor}T00:00:00Z`);
+
+  if (Number.isNaN(data.getTime()) || data.toISOString().slice(0, 10) !== valor) {
+    adicionarErro(arquivo, local, "Data invalida.");
+  }
+}
+
+function validarHoraCalendario(valor, arquivo, local) {
+  if (typeof valor !== "string" || !HORA_REGEX.test(valor)) {
+    adicionarErro(arquivo, local, "Hora deve estar em HH:mm.");
+  }
+}
+
+function validarJogoCalendario(jogo, arquivo, local, idsEncontrados, fases) {
+  if (!isObjetoSimples(jogo)) {
+    adicionarErro(arquivo, local, "Jogo do calendario deve ser um objeto.");
+    return;
+  }
+
+  CAMPOS_CALENDARIO_OBRIGATORIOS.forEach((campo) => {
+    if (!hasOwn(jogo, campo)) {
+      adicionarErro(arquivo, local, `Campo obrigatorio ausente: ${campo}.`);
+    }
+  });
+
+  CAMPOS_RESULTADO_PROIBIDOS_NO_CALENDARIO.forEach((campo) => {
+    if (hasOwn(jogo, campo)) {
+      adicionarErro(
+        arquivo,
+        `${local}.${campo}`,
+        "Calendario nao deve conter placares ou resultado oficial."
+      );
+    }
+  });
+
+  if (!Number.isInteger(jogo.jogo)) {
+    adicionarErro(arquivo, `${local}.jogo`, "ID do jogo deve ser inteiro.");
+  } else {
+    idsEncontrados.set(jogo.jogo, (idsEncontrados.get(jogo.jogo) || 0) + 1);
+  }
+
+  if (typeof jogo.fase !== "string" || jogo.fase.trim() === "") {
+    adicionarErro(arquivo, `${local}.fase`, "Fase deve ser texto preenchido.");
+  } else {
+    fases[jogo.fase] = (fases[jogo.fase] || 0) + 1;
+  }
+
+  if (jogo.fase === "grupos") {
+    if (typeof jogo.grupo !== "string" || !/^[A-L]$/.test(jogo.grupo)) {
+      adicionarErro(arquivo, `${local}.grupo`, "Grupo deve ser uma letra de A a L.");
+    }
+  } else if (jogo.grupo !== null) {
+    adicionarErro(arquivo, `${local}.grupo`, "Grupo deve ser null no mata-mata.");
+  }
+
+  validarDataCalendario(jogo.data, arquivo, `${local}.data`);
+  validarHoraCalendario(jogo.hora_brasilia, arquivo, `${local}.hora_brasilia`);
+
+  if (jogo.timezone !== "America/Sao_Paulo") {
+    adicionarErro(
+      arquivo,
+      `${local}.timezone`,
+      "Timezone deve ser America/Sao_Paulo."
+    );
+  }
+
+  ["mandante", "visitante", "sede"].forEach((campo) => {
+    if (typeof jogo[campo] !== "string" || jogo[campo].trim() === "") {
+      adicionarErro(
+        arquivo,
+        `${local}.${campo}`,
+        "Campo deve ser texto preenchido."
+      );
+    }
+  });
+}
+
+function validarCalendarioContraBolao(calendario, dadosPalpites) {
+  const participanteBase = Array.isArray(dadosPalpites) ? dadosPalpites[0] : null;
+  const jogosBase = Array.isArray(participanteBase?.jogos)
+    ? participanteBase.jogos
+    : [];
+
+  if (jogosBase.length === 0) {
+    adicionarAviso(
+      ARQUIVO_CALENDARIO,
+      "$",
+      "Nao foi possivel comparar calendario com os jogos do bolao."
+    );
+    return;
+  }
+
+  const jogosBolaoPorId = new Map(
+    jogosBase.map((jogo) => [Number(jogo.jogo), jogo])
+  );
+
+  calendario.forEach((jogoCalendario, index) => {
+    const local = `$[${index}]`;
+    const jogoBolao = jogosBolaoPorId.get(Number(jogoCalendario.jogo));
+
+    if (!jogoBolao) {
+      adicionarErro(
+        ARQUIVO_CALENDARIO,
+        local,
+        `Jogo ${jogoCalendario.jogo} nao existe na base de palpites.`
+      );
+      return;
+    }
+
+    if (jogoCalendario.fase !== jogoBolao.fase) {
+      adicionarErro(
+        ARQUIVO_CALENDARIO,
+        `${local}.fase`,
+        `Fase difere do bolao: calendario=${jogoCalendario.fase}, bolao=${jogoBolao.fase}.`
+      );
+    }
+
+    if (jogoCalendario.fase !== "grupos") return;
+
+    const mandanteBolao = NOMES_CALENDARIO_PARA_BOLAO[jogoCalendario.mandante];
+    const visitanteBolao = NOMES_CALENDARIO_PARA_BOLAO[jogoCalendario.visitante];
+
+    if (!mandanteBolao || !visitanteBolao) {
+      adicionarAviso(
+        ARQUIVO_CALENDARIO,
+        local,
+        "Nao ha mapa de nomes para comparar selecoes com o bolao."
+      );
+      return;
+    }
+
+    if (
+      mandanteBolao !== jogoBolao.selecao_a ||
+      visitanteBolao !== jogoBolao.selecao_b
+    ) {
+      adicionarErro(
+        ARQUIVO_CALENDARIO,
+        local,
+        `Confronto difere do bolao: calendario=${mandanteBolao} x ${visitanteBolao}, bolao=${jogoBolao.selecao_a} x ${jogoBolao.selecao_b}.`
+      );
+    }
+  });
+}
+
+function validarCalendario(dadosPalpites) {
+  const dados = lerJson(ARQUIVO_CALENDARIO);
+
+  if (!dados) return;
+
+  validarStringsVazias(dados, ARQUIVO_CALENDARIO, "$");
+
+  if (!Array.isArray(dados)) {
+    adicionarErro(ARQUIVO_CALENDARIO, "$", "Raiz deve ser um array.");
+    return;
+  }
+
+  relatorio.resumo.jogosCalendario = dados.length;
+
+  if (dados.length !== TOTAL_JOGOS_ESPERADO) {
+    adicionarErro(
+      ARQUIVO_CALENDARIO,
+      "$",
+      `Calendario deve ter ${TOTAL_JOGOS_ESPERADO} jogos; encontrado: ${dados.length}.`
+    );
+  }
+
+  const idsEncontrados = new Map();
+  const fases = {};
+
+  dados.forEach((jogo, indiceJogo) => {
+    validarJogoCalendario(
+      jogo,
+      ARQUIVO_CALENDARIO,
+      `$[${indiceJogo}]`,
+      idsEncontrados,
+      fases
+    );
+  });
+
+  validarIdsJogos(ARQUIVO_CALENDARIO, "$", idsEncontrados);
+  validarContagemFases(ARQUIVO_CALENDARIO, "$", fases);
+  validarCalendarioContraBolao(dados, dadosPalpites);
 }
 
 function validarObjetoOpcional(arquivo, dados, chave) {
@@ -523,6 +797,7 @@ function imprimirRelatorio() {
   console.log("Resumo:");
   console.log(`- Total de participantes: ${relatorio.resumo.participantes}`);
   console.log(`- Total de jogos nos palpites: ${relatorio.resumo.jogosPalpites}`);
+  console.log(`- Total de jogos no calendario: ${relatorio.resumo.jogosCalendario}`);
   console.log(`- Total de jogos oficiais: ${relatorio.resumo.jogosOficiais}`);
   console.log(`- Erros encontrados: ${relatorio.erros.length}`);
   console.log(`- Avisos encontrados: ${relatorio.avisos.length}`);
@@ -546,6 +821,7 @@ function imprimirRelatorio() {
   console.log("Status final: SUCESSO. Dados integros.");
 }
 
-validarPalpites();
+const dadosPalpites = validarPalpites();
+validarCalendario(dadosPalpites);
 validarResultadosOficiais();
 imprimirRelatorio();

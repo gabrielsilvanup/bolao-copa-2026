@@ -1,6 +1,6 @@
 const ABAS = [
   { id: "resumo", label: "Resumo" },
-  { id: "ranking", label: "Ranking" },
+  { id: "ranking", label: "Tabela" },
   { id: "participantes", label: "Participantes" },
   { id: "palpites", label: "Palpites" },
   { id: "resultados", label: "Resultados" },

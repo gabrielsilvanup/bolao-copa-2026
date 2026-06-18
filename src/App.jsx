@@ -93,6 +93,7 @@ function ResumoRapido({
 export default function App() {
   const [participantes, setParticipantes] = useState([]);
   const [resultadosOficiais, setResultadosOficiais] = useState(null);
+  const [calendarioOficial, setCalendarioOficial] = useState([]);
   const [participanteSelecionado, setParticipanteSelecionado] = useState(null);
   const [busca, setBusca] = useState("");
   const [faseSelecionada, setFaseSelecionada] = useState("todos");
@@ -103,9 +104,14 @@ export default function App() {
   useEffect(() => {
     async function carregarDados() {
       try {
-        const [respostaPalpites, respostaResultados] = await Promise.all([
+        const [
+          respostaPalpites,
+          respostaResultados,
+          respostaCalendario,
+        ] = await Promise.all([
           fetch("/data/palpites-copa-2026.json"),
           fetch("/data/resultados-oficiais.json"),
+          fetch("/data/calendario-oficial.json"),
         ]);
 
         if (!respostaPalpites.ok) {
@@ -118,8 +124,13 @@ export default function App() {
           );
         }
 
+        if (!respostaCalendario.ok) {
+          throw new Error("Não foi possível carregar o JSON do calendário.");
+        }
+
         const dadosPalpites = await respostaPalpites.json();
         const dadosResultados = await respostaResultados.json();
+        const dadosCalendario = await respostaCalendario.json();
 
         let resultadosIniciais = dadosResultados;
 
@@ -135,6 +146,7 @@ export default function App() {
 
         setParticipantes(dadosPalpites);
         setResultadosOficiais(resultadosIniciais);
+        setCalendarioOficial(dadosCalendario);
         setParticipanteSelecionado(dadosPalpites[0] || null);
       } catch (error) {
         setErro(error.message);
@@ -311,6 +323,7 @@ export default function App() {
             <GamesTable
               jogos={jogosFiltrados}
               resultadosOficiais={resultadosOficiais}
+              calendarioOficial={calendarioOficial}
             />
           </section>
         </section>
@@ -321,6 +334,7 @@ export default function App() {
           <OfficialResults
             participantes={participantes}
             resultadosOficiais={resultadosOficiais}
+            calendarioOficial={calendarioOficial}
           />
         </section>
       )}

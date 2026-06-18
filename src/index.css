@@ -6794,6 +6794,18 @@ td:nth-child(6) {
   background: #ffffff;
 }
 
+.team-flag.emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  border-radius: 6px;
+  font-size: 19px;
+  line-height: 1;
+  box-shadow: none;
+}
+
 .home-premiados-list span {
   color: var(--blue-600);
   font-size: 12px;
@@ -7384,5 +7396,673 @@ td:nth-child(6) {
   .regras-observacao {
     margin-top: 8px;
     font-size: 12px;
+  }
+}
+
+/* CALENDARIO OFICIAL */
+
+.agenda-jogo {
+  min-width: 132px;
+}
+
+.tabela-card table {
+  min-width: 1120px;
+}
+
+.agenda-jogo span,
+.agenda-jogo small {
+  display: block;
+  white-space: nowrap;
+}
+
+.agenda-jogo span {
+  color: var(--navy-950);
+  font-weight: 950;
+}
+
+.agenda-jogo small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.resultados-stats-grid {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.consulta-jogo-controles {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(280px, 1.2fr);
+  gap: 8px;
+  width: min(740px, 100%);
+}
+
+.resultados-busca-linha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.resultados-busca-linha button {
+  min-width: 74px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #eef3fb;
+  color: var(--navy-950);
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.resultados-busca-linha button.ativo {
+  background: var(--blue-600);
+  border-color: var(--blue-600);
+  color: #ffffff;
+}
+
+.consulta-jogo-controles input,
+.consulta-jogo-controles select {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--navy-950);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.consulta-jogo-controles input:focus,
+.consulta-jogo-controles select:focus {
+  border-color: var(--blue-600);
+  box-shadow: 0 0 0 4px rgba(0, 108, 255, 0.12);
+  outline: none;
+}
+
+.consulta-jogo-meta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: #f8fbff;
+}
+
+.consulta-jogo-meta span,
+.consulta-jogo-meta em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.consulta-jogo-meta strong {
+  min-width: 0;
+  color: var(--navy-950);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resultado-match-card[role="button"] {
+  cursor: pointer;
+}
+
+.resultado-match-card[role="button"]:focus-visible {
+  outline: 3px solid rgba(246, 196, 69, 0.85);
+  outline-offset: 3px;
+}
+
+.resultado-match-card.selecionado {
+  border-color: rgba(0, 108, 255, 0.55);
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 108, 255, 0.16),
+    0 12px 26px rgba(3, 18, 47, 0.07);
+}
+
+.resultado-match-agenda {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  margin: -2px 0 12px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #eef3fb;
+}
+
+.resultado-match-agenda span {
+  color: var(--blue-600);
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.resultado-match-agenda strong {
+  min-width: 0;
+  color: var(--navy-950);
+  font-size: 12px;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1320px) {
+  .resultados-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .resultados-stats-grid {
+    display: flex;
+    grid-template-columns: none;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .consulta-jogo-controles {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .resultados-busca-linha {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .resultados-busca-linha button {
+    min-height: 36px;
+  }
+
+  .consulta-jogo-controles input,
+  .consulta-jogo-controles select {
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .consulta-jogo-meta {
+    grid-template-columns: 1fr;
+    gap: 3px;
+    padding: 8px 10px;
+  }
+
+  .consulta-jogo-meta strong {
+    font-size: 12px;
+    white-space: normal;
+  }
+
+  .resultado-match-card {
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .resultado-match-top {
+    margin-bottom: 9px;
+  }
+
+  .resultado-match-agenda {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    margin-bottom: 9px;
+    padding: 7px 8px;
+  }
+
+  .resultado-match-agenda strong {
+    text-align: left;
+  }
+}
+
+/* RESULTADOS - CONSULTA RAPIDA POR CALENDARIO */
+
+.resultados-quick-card {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 16px;
+}
+
+.resultados-quick-tabs {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.resultados-quick-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.resultados-quick-tabs button {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--navy-950);
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.resultados-quick-tabs button.ativo {
+  background: var(--navy-950);
+  border-color: var(--navy-950);
+  color: #ffffff;
+}
+
+.resultados-quick-card input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--navy-950);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.selecao-picker-card {
+  padding: 10px;
+  border-radius: 16px;
+}
+
+.selecao-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 7px;
+  max-height: 290px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.selecao-picker-grid button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  min-height: 38px;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--navy-950);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: left;
+}
+
+.selecao-picker-grid button.ativo {
+  border-color: rgba(0, 108, 255, 0.55);
+  background: rgba(0, 108, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(0, 108, 255, 0.18);
+}
+
+.jogo-consulta-card {
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.jogo-consulta-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, #ffffff, #f8fbff);
+}
+
+.jogo-consulta-head span,
+.jogo-consulta-head em {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.jogo-consulta-head strong {
+  display: block;
+  min-width: 0;
+  margin-top: 3px;
+  color: var(--navy-950);
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jogo-consulta-head em {
+  min-height: 26px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: #eef3fb;
+  color: var(--navy-950);
+  white-space: nowrap;
+}
+
+.jogo-consulta-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px 10px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+}
+
+.jogo-consulta-meta span {
+  min-width: 0;
+  padding: 7px 8px;
+  border-radius: 10px;
+  background: #eef3fb;
+  color: var(--navy-950);
+  font-size: 12px;
+  font-weight: 900;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jogo-palpite-lista {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  background: #f8fbff;
+}
+
+.jogo-palpite-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 70px 74px;
+  gap: 6px;
+  align-items: center;
+  min-height: 38px;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: #ffffff;
+}
+
+.jogo-palpite-row span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  border-radius: 9px;
+  background: #eef3fb;
+  color: var(--navy-950);
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.jogo-palpite-row strong {
+  min-width: 0;
+  color: var(--navy-950);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jogo-palpite-row em,
+.jogo-palpite-row small {
+  color: var(--text-soft);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 850;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.jogo-palpite-row small {
+  color: var(--blue-600);
+}
+
+.resultado-dia-lista {
+  display: grid;
+  gap: 10px;
+}
+
+.resultado-dia-grupo {
+  display: grid;
+  gap: 7px;
+}
+
+.resultado-dia-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 2px;
+}
+
+.resultado-dia-header strong {
+  color: var(--navy-950);
+  font-size: 14px;
+}
+
+.resultado-dia-header span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.resultado-game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+  gap: 8px;
+}
+
+.resultado-game-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 8px;
+  align-items: center;
+  min-height: 86px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--text);
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(3, 18, 47, 0.04);
+}
+
+.resultado-game-card.selecionado {
+  border-color: rgba(0, 108, 255, 0.65);
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 108, 255, 0.14),
+    0 10px 22px rgba(0, 108, 255, 0.1);
+}
+
+.resultado-game-numero,
+.resultado-game-meta,
+.resultado-game-status {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.resultado-game-meta {
+  justify-self: end;
+}
+
+.resultado-game-card strong {
+  grid-column: 1 / 3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--navy-950);
+  font-size: 13px;
+}
+
+.resultado-game-card strong .team-name {
+  min-width: 0;
+}
+
+.resultado-game-card strong .team-name > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resultado-game-card strong small {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.resultado-game-status {
+  grid-column: 1 / 3;
+  justify-self: start;
+  min-height: 23px;
+  padding: 5px 7px;
+  border-radius: 999px;
+  background: #eef3fb;
+  color: var(--navy-950);
+}
+
+.resultado-game-status.encerrado {
+  background: rgba(0, 176, 80, 0.12);
+  color: #08733a;
+}
+
+.resultado-game-status.aguardando {
+  background: rgba(246, 196, 69, 0.22);
+  color: #755000;
+}
+
+.resultado-empty.rapido {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 16px;
+}
+
+.resultado-empty.rapido button {
+  justify-self: start;
+  min-height: 34px;
+  margin-top: 4px;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--navy-950);
+  color: #ffffff;
+  font-weight: 950;
+}
+
+.selecao-comparativo-card {
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.resultados-section-header.compacto {
+  padding: 12px;
+}
+
+.resultados-section-header.compacto h2 {
+  font-size: 20px;
+}
+
+.selecao-comparativo-wrap {
+  width: 100%;
+  overflow-x: auto;
+  padding: 8px;
+  background: #f8fbff;
+}
+
+.selecao-comparativo-table {
+  min-width: max(760px, 100%);
+  border-spacing: 0 6px;
+  background: transparent;
+}
+
+.selecao-comparativo-table th,
+.selecao-comparativo-table td {
+  padding: 8px;
+  border: 0;
+  background: #ffffff;
+  font-size: 12px;
+}
+
+.selecao-comparativo-table th {
+  position: static;
+  background: var(--navy-950);
+  color: #ffffff;
+}
+
+.selecao-comparativo-table th small,
+.selecao-comparativo-table td small {
+  display: block;
+  margin-top: 3px;
+  color: currentColor;
+  font-size: 10px;
+  font-weight: 800;
+  opacity: 0.72;
+}
+
+.selecao-comparativo-table td span {
+  display: block;
+  color: var(--navy-950);
+  font-weight: 950;
+}
+
+.selecao-comparativo-table td:first-child,
+.selecao-comparativo-table td:nth-child(2) {
+  color: var(--navy-950);
+  font-weight: 950;
+}
+
+@media (max-width: 760px) {
+  .resultado-game-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jogo-consulta-head {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .jogo-consulta-head em {
+    justify-self: start;
+  }
+
+  .jogo-consulta-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .jogo-consulta-meta span {
+    text-align: left;
+  }
+
+  .jogo-palpite-row {
+    grid-template-columns: 32px minmax(0, 1fr) 62px;
+  }
+
+  .jogo-palpite-row small {
+    grid-column: 2 / 4;
+    text-align: left;
+  }
+
+  .selecao-picker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: 230px;
   }
 }

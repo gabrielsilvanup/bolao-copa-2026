@@ -6,6 +6,11 @@ import {
 } from "../utils/gameUtils";
 
 import {
+  criarMapaCalendario,
+  formatarAgendaJogo,
+} from "../utils/calendarUtils";
+
+import {
   calcularPontuacaoJogo,
   criarMapaResultados,
 } from "../utils/scoringUtils";
@@ -24,8 +29,13 @@ function classeFase(fase) {
   return fase === "grupos" ? "grupos" : "mata";
 }
 
-export default function GamesTable({ jogos, resultadosOficiais }) {
+export default function GamesTable({
+  jogos,
+  resultadosOficiais,
+  calendarioOficial = [],
+}) {
   const mapaResultados = criarMapaResultados(resultadosOficiais);
+  const mapaCalendario = criarMapaCalendario(calendarioOficial);
 
   return (
     <div className="card tabela-card">
@@ -45,6 +55,7 @@ export default function GamesTable({ jogos, resultadosOficiais }) {
           <thead>
             <tr>
               <th>Jogo</th>
+              <th>Agenda</th>
               <th>Fase</th>
               <th>Seleção A</th>
               <th>Placar</th>
@@ -58,6 +69,7 @@ export default function GamesTable({ jogos, resultadosOficiais }) {
           <tbody>
             {jogos.map((jogo) => {
               const resultadoOficial = mapaResultados[jogo.jogo];
+              const jogoCalendario = mapaCalendario[jogo.jogo];
               const pontuacao = calcularPontuacaoJogo(jogo, resultadoOficial);
 
               return (
@@ -68,6 +80,10 @@ export default function GamesTable({ jogos, resultadosOficiais }) {
                   }`}
                 >
                   <td>{jogo.jogo}</td>
+                  <td className="agenda-jogo">
+                    <span>{formatarAgendaJogo(jogoCalendario)}</span>
+                    <small>{jogoCalendario?.sede || "-"}</small>
+                  </td>
                   <td>
                     <span className={`fase-pill ${classeFase(jogo.fase)}`}>
                       {formatarFase(jogo.fase)}

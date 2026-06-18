@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { getSelecaoInfo } from "../utils/teamUtils";
 
 function siglaFallback(nome) {
@@ -14,7 +13,6 @@ function siglaFallback(nome) {
 }
 
 export default function TeamName({ selecao, mostrarOriginal = false }) {
-  const [erroImagem, setErroImagem] = useState(false);
   const info = getSelecaoInfo(selecao);
 
   if (!info) {
@@ -29,14 +27,10 @@ export default function TeamName({ selecao, mostrarOriginal = false }) {
 
   return (
     <span className="team-name" title={titulo}>
-      {info.bandeiraUrl && !erroImagem ? (
-        <img
-          className="team-flag"
-          src={info.bandeiraUrl}
-          alt=""
-          loading="lazy"
-          onError={() => setErroImagem(true)}
-        />
+      {info.emoji ? (
+        <span className="team-flag emoji" aria-hidden="true">
+          {info.emoji}
+        </span>
       ) : (
         <span className="team-flag-fallback">
           {siglaFallback(info.nomePt)}
