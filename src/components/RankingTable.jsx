@@ -61,52 +61,6 @@ function ativarComTeclado(event, onSelecionar) {
   onSelecionar?.();
 }
 
-function RankingPodiumCard({
-  item,
-  premio,
-  rankingTemPontos,
-  onSelecionar,
-}) {
-  if (!item) return null;
-
-  const classe = classeMedalha(item.posicao, rankingTemPontos);
-  const temPremio = rankingTemPontos && premio && premio.valor > 0;
-  const clicavel = Boolean(onSelecionar);
-
-  return (
-    <article
-      className={`ranking-podium-card ${classe}`}
-      onClick={onSelecionar}
-      onKeyDown={(event) => ativarComTeclado(event, onSelecionar)}
-      role={clicavel ? "button" : undefined}
-      tabIndex={clicavel ? 0 : undefined}
-    >
-      <div className="ranking-podium-medal">
-        {textoMedalha(item.posicao, rankingTemPontos)}
-      </div>
-
-      <div>
-        <span>{item.posicao}º lugar</span>
-        <h3>{item.participante}</h3>
-
-        {item.empatado && (
-          <small>{item.totalEmpatados} empatados nesta posição</small>
-        )}
-      </div>
-
-      <div className="ranking-podium-score">
-        <strong>{item.resumo.total}</strong>
-        <span>pontos</span>
-      </div>
-
-      <div className="ranking-podium-prize">
-        <span>Prêmio previsto</span>
-        <strong>{temPremio ? formatarDinheiro(premio.valor) : "-"}</strong>
-      </div>
-    </article>
-  );
-}
-
 function RankingRow({
   item,
   premio,
@@ -223,11 +177,6 @@ export default function RankingTable({
   const classificadosLancados = contarFasesComClassificados(resultadosOficiais);
   const posicoesFinaisLancadas = contarPosicoesFinais(resultadosOficiais);
 
-  const lider = ranking[0];
-  const pontosLider = lider?.resumo?.total || 0;
-
-  const podium = ranking.filter((item) => item.posicao <= 3);
-
   const rankingFiltrado = useMemo(() => {
     const termo = normalizarTexto(busca);
 
@@ -248,40 +197,6 @@ export default function RankingTable({
 
   return (
     <div className="ranking-pro">
-      <section className="card ranking-pro-header">
-        <div>
-          <p className="tag">Classificação geral</p>
-          <h2>Ranking do Bolão</h2>
-          <p>
-            Pontuação atualizada automaticamente com placares, avanço de fase,
-            chaveamento e posições finais oficiais. Empates permanecem
-            empatados e dividem as faixas de premiação ocupadas.
-          </p>
-        </div>
-
-        <div className="ranking-pro-stats">
-          <div>
-            <span>Líder</span>
-            <strong>{rankingTemPontos ? lider?.participante : "-"}</strong>
-          </div>
-
-          <div>
-            <span>Pontos do líder</span>
-            <strong>{rankingTemPontos ? pontosLider : "-"}</strong>
-          </div>
-
-          <div>
-            <span>Jogos encerrados</span>
-            <strong>{jogosEncerrados}</strong>
-          </div>
-
-          <div>
-            <span>Prêmio total</span>
-            <strong>{formatarDinheiro(totalArrecadado)}</strong>
-          </div>
-        </div>
-      </section>
-
       {!rankingTemPontos && (
         <section className="card ranking-alerta">
           <strong>Ranking ainda zerado</strong>
@@ -293,54 +208,18 @@ export default function RankingTable({
         </section>
       )}
 
-      <section className="ranking-status-grid">
-        <div className="card ranking-status-card">
-          <span>Participantes</span>
-          <strong>{participantes.length}</strong>
-        </div>
-
-        <div className="card ranking-status-card">
-          <span>Classificados lançados</span>
-          <strong>{classificadosLancados}</strong>
-        </div>
-
-        <div className="card ranking-status-card">
-          <span>Posições finais</span>
-          <strong>{posicoesFinaisLancadas}/4</strong>
-        </div>
-
-        <div className="card ranking-status-card">
-          <span>Última atualização</span>
-          <strong>{resultadosOficiais?.ultima_atualizacao || "-"}</strong>
-        </div>
-      </section>
-
-      {rankingTemPontos && podium.length > 0 && (
-        <section className="ranking-podium">
-          {podium.map((item) => (
-            <RankingPodiumCard
-              key={item.participante}
-              item={item}
-              premio={mapaPremiacao[item.participante]}
-              rankingTemPontos={rankingTemPontos}
-              onSelecionar={() => selecionarParticipanteRanking(item.participante)}
-            />
-          ))}
-        </section>
-      )}
-
       <section className="card ranking-card">
         <div className="ranking-table-header">
           <div>
-            <p className="tag">Tabela completa</p>
-            <h2>Classificação dos participantes</h2>
+            <p className="tag">Tabela</p>
+            <h2>Classificação</h2>
           </div>
 
           <input
             type="text"
             value={busca}
             onChange={(event) => setBusca(event.target.value)}
-            placeholder="Buscar participante..."
+            placeholder="Buscar..."
           />
         </div>
 
@@ -382,6 +261,28 @@ export default function RankingTable({
             <span>Altere a busca para visualizar o ranking.</span>
           </div>
         )}
+      </section>
+
+      <section className="ranking-status-grid">
+        <div className="card ranking-status-card">
+          <span>Participantes</span>
+          <strong>{participantes.length}</strong>
+        </div>
+
+        <div className="card ranking-status-card">
+          <span>Classificados lançados</span>
+          <strong>{classificadosLancados}</strong>
+        </div>
+
+        <div className="card ranking-status-card">
+          <span>Posições finais</span>
+          <strong>{posicoesFinaisLancadas}/4</strong>
+        </div>
+
+        <div className="card ranking-status-card">
+          <span>Jogos encerrados</span>
+          <strong>{jogosEncerrados}</strong>
+        </div>
       </section>
     </div>
   );

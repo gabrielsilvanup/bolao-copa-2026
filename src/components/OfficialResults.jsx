@@ -1,5 +1,9 @@
 import { useMemo, useState } from "react";
 import { formatarFase } from "../utils/gameUtils";
+import {
+  calcularPontuacaoJogo,
+  calcularRanking,
+} from "../utils/scoringUtils";
 import TeamName from "./TeamName";
 
 const FILTROS_FASE = [
@@ -69,6 +73,16 @@ function placarTexto(jogo) {
   if (!jogoTemPlacar(jogo)) return "-";
 
   return `${jogo.gols_a} x ${jogo.gols_b}`;
+}
+
+function placarComPenaltisTexto(jogo) {
+  if (!jogo) return "-";
+
+  const placar = placarTexto(jogo);
+
+  if (!temPenaltis(jogo)) return placar;
+
+  return `${placar} (${jogo.penaltis_a} x ${jogo.penaltis_b})`;
 }
 
 function temPenaltis(jogo) {
@@ -305,7 +319,129 @@ function PosicaoFinalCard({ posicao, selecao }) {
   );
 }
 
-export default function OfficialResults({ resultadosOficiais }) {
+function rotuloJogoConsulta(jogo) {
+  const selecaoA = jogo.selecao_a || jogo.slot_a || "A definir";
+  const selecaoB = jogo.selecao_b || jogo.slot_b || "A definir";
+
+  return `Jogo ${jogo.jogo} - ${selecaoA} x ${selecaoB}`;
+}
+
+function pontosConsultaTexto(calculo) {
+  if (!calculo) return "-";
+  if (calculo.status === "mata_mata_por_fase") return "fase";
+  if (calculo.status === "pendente") return "-";
+  if (calculo.status === "nao_preenchido") return "-";
+
+  return calculo.pontos;
+}
+
+function ConsultaJogo({
+  participantes,
+  resultadosOficiais,
+  jogosPublicos,
+}) {
+  const [jogoSelecionadoId, setJogoSelecionadoId] = useState("");
+
+  const ranking = useMemo(() => {
+    return calcularRanking(participantes, resultadosOficiais);
+  }, [participantes, resultadosOficiais]);
+
+  const jogoSelecionado = useMemo(() => {
+    const id = Number(jogoSelecionadoId);
+
+    if (id) {
+      return jogosPublicos.find((jogo) => Number(jogo.jogo) === id) || null;
+    }
+
+    return jogosPublicos[0] || null;
+  }, [jogosPublicos, jogoSelecionadoId]);
+
+  const palpites = useMemo(() => {
+    if (!jogoSelecionado) return [];
+
+    return ranking.map((item) => {
+      const palpite = item.dados.jogos.find(
+        (jogo) => Number(jogo.jogo) === Number(jogoSelecionado.jogo)
+      );
+
+      const calculo = palpite
+        ? calcularPontuacaoJogo(palpite, jogoSelecionado)
+        : null;
+
+      return {
+        itemRanking: item,
+        palpite,
+        calculo,
+      };
+    });
+  }, [ranking, jogoSelecionado]);
+
+  return (
+    <section className="card consulta-jogo-card">
+      <div className="consulta-jogo-top">
+        <div>
+          <p className="tag">Consulta por jogo</p>
+          <h2>Palpites do jogo</h2>
+        </div>
+
+        <select
+          value={jogoSelecionado?.jogo || ""}
+          onChange={(event) => setJogoSelecionadoId(event.target.value)}
+        >
+          {jogosPublicos.map((jogo) => (
+            <option key={jogo.jogo} value={jogo.jogo}>
+              {rotuloJogoConsulta(jogo)}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {jogoSelecionado ? (
+        <>
+          <div className="consulta-jogo-score">
+            <span>Jogo {jogoSelecionado.jogo}</span>
+            <strong>
+              <TeamName selecao={jogoSelecionado.selecao_a} />{" "}
+              {placarComPenaltisTexto(jogoSelecionado)}{" "}
+              <TeamName selecao={jogoSelecionado.selecao_b} />
+            </strong>
+            <em>{formatarFase(jogoSelecionado.fase)}</em>
+          </div>
+
+          <div className="consulta-palpite-lista">
+            {palpites.map(({ itemRanking, palpite, calculo }) => (
+              <div key={itemRanking.participante} className="consulta-palpite-row">
+                <span className="consulta-posicao">{itemRanking.posicao}º</span>
+
+                <strong>{itemRanking.participante}</strong>
+
+                <span className="consulta-palpite-placar">
+                  {palpite ? placarComPenaltisTexto(palpite) : "-"}
+                </span>
+
+                <span className="consulta-oficial">
+                  {placarComPenaltisTexto(jogoSelecionado)}
+                </span>
+
+                <em>{pontosConsultaTexto(calculo)}</em>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="resultado-empty">
+          <strong>Nenhum jogo disponível</strong>
+          <span>Cadastre resultados ou gere o chaveamento oficial.</span>
+        </div>
+      )}
+    </section>
+  );
+}
+
+export default function OfficialResults({
+  participantes = [],
+  resultadosOficiais,
+}) {
   const [faseSelecionada, setFaseSelecionada] = useState("todos");
   const [statusSelecionado, setStatusSelecionado] = useState("todos");
   const [busca, setBusca] = useState("");
@@ -365,45 +501,47 @@ export default function OfficialResults({ resultadosOficiais }) {
 
   return (
     <div className="resultados-pro">
-      <section className="card resultados-hero">
-        <div>
-          <p className="tag">Resultados oficiais</p>
-          <h2>{textoStatusGeral(resultadosOficiais?.status)}</h2>
-          <p>
-            Central oficial dos placares, confrontos definidos, chaveamento,
-            classificados e posições finais do bolão.
-          </p>
-        </div>
-
-        <div className="resultados-hero-badge">
-          <span>Última atualização</span>
-          <strong>{resultadosOficiais?.ultima_atualizacao || "-"}</strong>
-        </div>
-      </section>
-
       <section className="resultados-stats-grid">
         <div className="card resultados-stat">
-          <span>Jogos cadastrados</span>
+          <span>{textoStatusGeral(resultadosOficiais?.status)}</span>
+          <strong>{resultadosOficiais?.ultima_atualizacao || "-"}</strong>
+        </div>
+
+        <div className="card resultados-stat">
+          <span>Cadastrados</span>
           <strong>{jogosComResultado.length}</strong>
         </div>
 
         <div className="card resultados-stat">
-          <span>Jogos encerrados</span>
+          <span>Encerrados</span>
           <strong>{jogosEncerrados}</strong>
         </div>
 
         <div className="card resultados-stat">
-          <span>Jogos pendentes</span>
+          <span>Pendentes</span>
           <strong>{jogosPendentes}</strong>
         </div>
 
         <div className="card resultados-stat">
-          <span>Confrontos definidos</span>
+          <span>Definidos</span>
           <strong>{confrontosDefinidos}</strong>
+        </div>
+      </section>
+
+      <ConsultaJogo
+        participantes={participantes}
+        resultadosOficiais={resultadosOficiais}
+        jogosPublicos={jogosPublicos}
+      />
+
+      <section className="resultados-stats-grid compacta">
+        <div className="card resultados-stat">
+          <span>Classificados</span>
+          <strong>{totalClassificados}</strong>
         </div>
 
         <div className="card resultados-stat">
-          <span>Posições finais</span>
+          <span>Finais</span>
           <strong>{totalPosicoesFinais}/4</strong>
         </div>
       </section>

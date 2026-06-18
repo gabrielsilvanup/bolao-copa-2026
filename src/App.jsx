@@ -11,11 +11,84 @@ import ParticipantList from "./components/ParticipantList";
 import PhaseFilters from "./components/PhaseFilters";
 import PrizeDistribution from "./components/PrizeDistribution";
 import RankingTable from "./components/RankingTable";
-import ResultsStatus from "./components/ResultsStatus";
 import RulesAndPrizes from "./components/RulesAndPrizes";
 import ParticipantOverview from "./components/ParticipantOverview";
+import { calcularRanking } from "./utils/scoringUtils";
+import {
+  calcularTotalArrecadado,
+  criarMapaPremiacao,
+  formatarDinheiro,
+} from "./utils/prizeUtils";
 
 const STORAGE_KEY = "bolao-copa-2026-resultados-oficiais";
+
+function ResumoRapido({
+  participantes,
+  resultadosOficiais,
+  totalJogosOficiais,
+  jogosEncerrados,
+}) {
+  const ranking = useMemo(() => {
+    return calcularRanking(participantes, resultadosOficiais);
+  }, [participantes, resultadosOficiais]);
+
+  const rankingTemPontos = ranking.some((item) => item.resumo.total > 0);
+  const totalArrecadado = calcularTotalArrecadado(participantes.length);
+  const mapaPremiacao = criarMapaPremiacao(ranking, totalArrecadado);
+  const premiados = ranking
+    .filter((item) => mapaPremiacao[item.participante]?.valor > 0)
+    .slice(0, 5);
+
+  return (
+    <section className="home-live">
+      <div className="card home-live-card premiados">
+        <div className="home-live-top">
+          <strong>Premiados agora</strong>
+          <span>{rankingTemPontos ? "ao vivo" : "aguardando"}</span>
+        </div>
+
+        {rankingTemPontos ? (
+          <div className="home-premiados-list">
+            {premiados.map((item) => {
+              const premio = mapaPremiacao[item.participante];
+
+              return (
+                <div key={item.participante}>
+                  <span>{item.posicao}º</span>
+                  <strong>{item.participante}</strong>
+                  <em>{item.resumo.total} pts</em>
+                  <small>{formatarDinheiro(premio.valor)}</small>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="home-live-empty">
+            Ranking sem pontos. Os premiados aparecem aqui assim que houver
+            resultado oficial pontuado.
+          </p>
+        )}
+      </div>
+
+      <div className="home-live-mini-grid">
+        <div className="card home-live-card mini">
+          <span>Jogos oficiais</span>
+          <strong>{totalJogosOficiais}</strong>
+        </div>
+
+        <div className="card home-live-card mini">
+          <span>Encerrados</span>
+          <strong>{jogosEncerrados}</strong>
+        </div>
+
+        <div className="card home-live-card mini">
+          <span>Participantes</span>
+          <strong>{participantes.length}</strong>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function App() {
   const [participantes, setParticipantes] = useState([]);
@@ -162,42 +235,18 @@ export default function App() {
 
   return (
     <main className="page">
-      <Header
-        totalParticipantes={participantes.length}
-        compacto={abaAtual !== "resumo"}
-      />
+      <Header />
 
       <NavigationTabs abaAtual={abaAtual} onSelecionarAba={setAbaAtual} />
 
       {abaAtual === "resumo" && (
         <section className="aba-conteudo">
-          <ResultsStatus resultados={resultadosOficiais} />
-
-          <div className="home-grid">
-            <div className="card home-card destaque">
-              <p className="tag">Visão geral</p>
-              <h2>Bolão em andamento</h2>
-              <p>
-                Acompanhe a pontuação dos participantes, os palpites, os
-                resultados oficiais e a premiação.
-              </p>
-            </div>
-
-            <div className="card home-card">
-              <span>Participantes</span>
-              <strong>{participantes.length}</strong>
-            </div>
-
-            <div className="card home-card">
-              <span>Jogos oficiais cadastrados</span>
-              <strong>{totalJogosOficiais}</strong>
-            </div>
-
-            <div className="card home-card">
-              <span>Jogos encerrados</span>
-              <strong>{jogosEncerrados}</strong>
-            </div>
-          </div>
+          <ResumoRapido
+            participantes={participantes}
+            resultadosOficiais={resultadosOficiais}
+            totalJogosOficiais={totalJogosOficiais}
+            jogosEncerrados={jogosEncerrados}
+          />
 
           <RankingTable
             participantes={participantes}
@@ -269,7 +318,10 @@ export default function App() {
 
       {abaAtual === "resultados" && (
         <section className="aba-conteudo">
-          <OfficialResults resultadosOficiais={resultadosOficiais} />
+          <OfficialResults
+            participantes={participantes}
+            resultadosOficiais={resultadosOficiais}
+          />
         </section>
       )}
 

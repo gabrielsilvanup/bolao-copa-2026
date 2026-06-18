@@ -6701,3 +6701,688 @@ td:nth-child(6) {
     margin-top: 6px;
   }
 }
+
+/* UI RAPIDA MOBILE - ESTILO PLACAR ESPORTIVO */
+
+.site-header {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  margin-bottom: 8px;
+  padding: 8px 4px;
+}
+
+.site-header h1 {
+  margin: 0;
+  color: var(--navy-950);
+  font-size: clamp(22px, 4vw, 34px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.tabs-card {
+  margin-bottom: 14px;
+  padding: 7px;
+  border-radius: 18px;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+  min-height: 36px;
+  padding: 9px 13px;
+  border-radius: 13px;
+  font-size: 13px;
+}
+
+.home-live {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
+  gap: 12px;
+}
+
+.home-live-card {
+  padding: 14px;
+  border-radius: 18px;
+}
+
+.home-live-card.premiados {
+  display: grid;
+  gap: 10px;
+}
+
+.home-live-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-live-top strong {
+  color: var(--navy-950);
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+
+.home-live-top span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 176, 80, 0.12);
+  color: #08733a;
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.home-premiados-list {
+  display: grid;
+  gap: 7px;
+}
+
+.home-premiados-list div {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.home-premiados-list span {
+  color: var(--blue-600);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.home-premiados-list strong {
+  min-width: 0;
+  color: var(--navy-950);
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-premiados-list em,
+.home-premiados-list small {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.home-premiados-list small {
+  color: #08733a;
+}
+
+.home-live-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.home-live-mini-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.home-live-card.mini span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.home-live-card.mini strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--navy-950);
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.ranking-pro {
+  gap: 12px;
+}
+
+.ranking-table-header {
+  padding: 14px 16px;
+}
+
+.ranking-table-header h2 {
+  font-size: 24px;
+}
+
+.ranking-table-header input {
+  height: 38px;
+  border-radius: 12px;
+}
+
+.ranking-status-grid {
+  gap: 10px;
+}
+
+.ranking-status-card {
+  padding: 12px;
+  border-radius: 16px;
+}
+
+.ranking-status-card strong {
+  font-size: 22px;
+}
+
+.resultados-stats-grid {
+  gap: 10px;
+}
+
+.resultados-stat {
+  padding: 12px;
+  border-radius: 16px;
+}
+
+.resultados-stat strong {
+  font-size: 23px;
+}
+
+.consulta-jogo-card {
+  overflow: hidden;
+}
+
+.consulta-jogo-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, #ffffff, #f8fbff);
+}
+
+.consulta-jogo-top h2 {
+  margin: 0;
+  color: var(--navy-950);
+  font-size: 22px;
+  letter-spacing: -0.04em;
+}
+
+.consulta-jogo-top select {
+  width: min(390px, 100%);
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--navy-950);
+  font-weight: 850;
+}
+
+.consulta-jogo-score {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+}
+
+.consulta-jogo-score span,
+.consulta-jogo-score em {
+  color: var(--muted);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.consulta-jogo-score strong {
+  min-width: 0;
+  color: var(--navy-950);
+  font-size: 16px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.consulta-palpite-lista {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+  background: #f8fbff;
+}
+
+.consulta-palpite-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 90px 90px 50px;
+  gap: 8px;
+  align-items: center;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.consulta-posicao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border-radius: 10px;
+  background: #eef3fb;
+  color: var(--navy-950);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.consulta-palpite-row strong {
+  min-width: 0;
+  color: var(--navy-950);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.consulta-palpite-placar,
+.consulta-oficial {
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 850;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.consulta-oficial {
+  color: var(--muted);
+}
+
+.consulta-palpite-row em {
+  justify-self: end;
+  min-width: 34px;
+  padding: 5px 7px;
+  border-radius: 999px;
+  background: rgba(0, 108, 255, 0.1);
+  color: var(--blue-600);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 950;
+  text-align: center;
+}
+
+.resultados-section {
+  border-radius: 18px;
+}
+
+.regras-card {
+  border-radius: 18px;
+}
+
+.regras-intro-grid {
+  display: none;
+}
+
+.regras-grid {
+  padding-top: 16px;
+}
+
+.regras-grid section {
+  border-radius: 16px;
+}
+
+@media (max-width: 1050px) {
+  .home-live {
+    grid-template-columns: 1fr;
+  }
+
+  .home-live-mini-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 8px;
+  }
+
+  .site-header {
+    min-height: 34px;
+    margin-bottom: 6px;
+    padding: 4px 2px;
+  }
+
+  .site-header h1 {
+    font-size: 22px;
+  }
+
+  .tabs-card {
+    top: 0;
+    margin-inline: -8px;
+    margin-bottom: 8px;
+    padding: 6px 8px;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .tabs-scroll {
+    gap: 6px;
+  }
+
+  .tab {
+    min-height: 34px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+  }
+
+  .aba-conteudo {
+    gap: 10px;
+  }
+
+  .home-live {
+    gap: 8px;
+  }
+
+  .home-live-card {
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .home-live-top strong {
+    font-size: 16px;
+  }
+
+  .home-premiados-list div {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    min-height: 36px;
+    padding: 7px 8px;
+  }
+
+  .home-premiados-list small {
+    grid-column: 2 / 4;
+    margin-top: -3px;
+  }
+
+  .home-live-mini-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .home-live-card.mini {
+    min-height: 66px;
+  }
+
+  .home-live-card.mini span {
+    font-size: 9px;
+    line-height: 1.15;
+  }
+
+  .home-live-card.mini strong {
+    font-size: 24px;
+  }
+
+  .ranking-table-header {
+    display: grid;
+    grid-template-columns: auto minmax(120px, 1fr);
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .ranking-table-header .tag {
+    display: none;
+  }
+
+  .ranking-table-header h2 {
+    font-size: 20px;
+  }
+
+  .ranking-table-header input {
+    width: 100%;
+    height: 34px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .ranking-table-wrap {
+    overflow: visible;
+    padding: 0 8px 8px;
+  }
+
+  .ranking-table {
+    min-width: 0;
+    table-layout: fixed;
+    border-spacing: 0 6px;
+  }
+
+  .ranking-table th,
+  .ranking-table td {
+    padding: 8px 6px;
+  }
+
+  .ranking-table th:nth-child(4),
+  .ranking-table th:nth-child(5),
+  .ranking-table th:nth-child(6),
+  .ranking-table th:nth-child(7),
+  .ranking-table th:nth-child(8),
+  .ranking-table td:nth-child(4),
+  .ranking-table td:nth-child(5),
+  .ranking-table td:nth-child(6),
+  .ranking-table td:nth-child(7),
+  .ranking-table td:nth-child(8) {
+    display: none;
+  }
+
+  .ranking-table th:nth-child(1),
+  .ranking-table td:nth-child(1) {
+    width: 44px;
+  }
+
+  .ranking-table th:nth-child(3),
+  .ranking-table td:nth-child(3) {
+    width: 56px;
+  }
+
+  .ranking-table th:nth-child(9),
+  .ranking-table td:nth-child(9) {
+    width: 86px;
+  }
+
+  .ranking-position-chip {
+    width: 32px;
+    height: 32px;
+    border-radius: 11px;
+    font-size: 11px;
+  }
+
+  .ranking-participante-cell strong {
+    font-size: 13px;
+  }
+
+  .ranking-participante-cell span,
+  .ranking-row-badges {
+    display: none;
+  }
+
+  .ranking-number.principal {
+    font-size: 18px;
+  }
+
+  .ranking-premio-cell strong {
+    font-size: 12px;
+  }
+
+  .ranking-premio-cell span {
+    display: none;
+  }
+
+  .ranking-status-grid {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .ranking-status-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ranking-status-card {
+    flex: 0 0 120px;
+  }
+
+  .resultados-stats-grid {
+    display: flex;
+    grid-template-columns: none;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .resultados-stats-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .resultados-stat {
+    flex: 0 0 118px;
+    min-height: 64px;
+    padding: 10px;
+  }
+
+  .resultados-stat span {
+    font-size: 9px;
+  }
+
+  .resultados-stat strong {
+    font-size: 20px;
+  }
+
+  .consulta-jogo-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .consulta-jogo-top .tag {
+    display: none;
+  }
+
+  .consulta-jogo-top h2 {
+    font-size: 18px;
+  }
+
+  .consulta-jogo-top select {
+    width: 100%;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .consulta-jogo-score {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 9px 10px;
+    text-align: left;
+  }
+
+  .consulta-jogo-score strong {
+    text-align: left;
+  }
+
+  .consulta-palpite-lista {
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .consulta-palpite-row {
+    grid-template-columns: 36px minmax(0, 1fr) 42px;
+    gap: 6px;
+    min-height: 48px;
+    padding: 7px;
+  }
+
+  .consulta-palpite-row strong {
+    font-size: 12px;
+  }
+
+  .consulta-palpite-placar,
+  .consulta-oficial {
+    grid-column: 2 / 4;
+    font-size: 11px;
+    text-align: left;
+  }
+
+  .consulta-palpite-placar::before {
+    content: "Palpite: ";
+    color: var(--muted);
+  }
+
+  .consulta-oficial::before {
+    content: "Oficial: ";
+    color: var(--muted);
+  }
+
+  .consulta-palpite-row em {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .resultados-section-header {
+    padding: 12px;
+  }
+
+  .resultados-section-header h2 {
+    font-size: 19px;
+  }
+
+  .resultados-filtros {
+    padding: 10px;
+  }
+
+  .resultado-matches-grid {
+    padding: 10px;
+  }
+
+  .regras-grid {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .regras-grid section {
+    padding: 10px;
+  }
+
+  .regras-grid h3 {
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  .regras-lista {
+    gap: 6px;
+  }
+
+  .regras-lista div {
+    padding: 8px 9px;
+    border-radius: 10px;
+  }
+
+  .regras-observacao {
+    margin-top: 8px;
+    font-size: 12px;
+  }
+}

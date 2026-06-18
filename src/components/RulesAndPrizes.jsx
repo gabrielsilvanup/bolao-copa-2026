@@ -76,7 +76,7 @@ export default function RulesAndPrizes() {
 
       <div className="regras-grid">
         <section className="regras-bloco destaque">
-          <h3>Fase de grupos</h3>
+          <h3>Grupos</h3>
 
           <ListaRegras
             itens={[
@@ -93,18 +93,17 @@ export default function RulesAndPrizes() {
           />
 
           <p className="regras-observacao">
-            O bônus de placar exato soma aos pontos do resultado correto.
+            Resultado + placar exato.
           </p>
         </section>
 
         <section className="regras-bloco">
-          <h3>Depois da fase de grupos</h3>
+          <h3>Pós-grupos</h3>
 
           <ListaRegras itens={FASES} sufixo=" pts" />
 
           <p className="regras-observacao">
-            Jogos de mata-mata não pontuam por resultado ou placar; a pontuação
-            vem das seleções que avançam.
+            Mata-mata pontua só por seleção classificada.
           </p>
         </section>
 
@@ -114,19 +113,17 @@ export default function RulesAndPrizes() {
           <ListaRegras itens={POSICOES_FINAIS} sufixo=" pts" />
 
           <p className="regras-observacao">
-            Campeão, vice, terceiro e quarto lugar são contabilizados
-            separadamente da pontuação por fase.
+            Pontuação extra no fim da Copa.
           </p>
         </section>
 
         <section className="regras-bloco">
-          <h3>Premiação e empate</h3>
+          <h3>Prêmio</h3>
 
           <ListaRegras itens={PREMIACAO} sufixo="%" />
 
           <p className="regras-observacao">
-            Participantes empatados dividem igualmente a soma das faixas que
-            ocupam. A organização fica separada dos participantes.
+            Empatados dividem as faixas ocupadas.
           </p>
         </section>
       </div>

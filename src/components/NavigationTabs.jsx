@@ -1,11 +1,11 @@
 const ABAS = [
-  { id: "resumo", label: "Resumo", descricao: "visão geral" },
-  { id: "ranking", label: "Ranking", descricao: "classificação" },
-  { id: "participantes", label: "Participantes", descricao: "desempenho" },
-  { id: "palpites", label: "Palpites", descricao: "jogo a jogo" },
-  { id: "resultados", label: "Resultados", descricao: "oficiais" },
-  { id: "admin", label: "Admin", descricao: "gestão" },
-  { id: "regras", label: "Regras", descricao: "pontuação" },
+  { id: "resumo", label: "Resumo" },
+  { id: "ranking", label: "Ranking" },
+  { id: "participantes", label: "Participantes" },
+  { id: "palpites", label: "Palpites" },
+  { id: "resultados", label: "Resultados" },
+  { id: "admin", label: "Admin" },
+  { id: "regras", label: "Regras" },
 ];
 
 function rolarParaTopo() {
@@ -34,8 +34,7 @@ export default function NavigationTabs({ abaAtual, onSelecionarAba }) {
             onClick={() => selecionarAba(aba.id)}
             aria-current={abaAtual === aba.id ? "page" : undefined}
           >
-            <span>{aba.label}</span>
-            <small>{aba.descricao}</small>
+            {aba.label}
           </button>
         ))}
       </div>
