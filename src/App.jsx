@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./index.css";
 
 import AdminArea from "./components/AdminArea";
@@ -21,6 +21,13 @@ import {
 } from "./utils/prizeUtils";
 
 const STORAGE_KEY = "bolao-copa-2026-resultados-oficiais";
+
+function normalizarTexto(texto) {
+  return String(texto || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
 
 function ResumoRapido({
   participantes,
@@ -91,6 +98,9 @@ function ResumoRapido({
 }
 
 export default function App() {
+  const listaParticipantesRef = useRef(null);
+  const detalheParticipanteRef = useRef(null);
+
   const [participantes, setParticipantes] = useState([]);
   const [resultadosOficiais, setResultadosOficiais] = useState(null);
   const [calendarioOficial, setCalendarioOficial] = useState([]);
@@ -168,12 +178,12 @@ export default function App() {
   }, [abaAtual]);
 
   const participantesFiltrados = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
+    const termo = normalizarTexto(busca.trim());
 
     if (!termo) return participantes;
 
     return participantes.filter((item) =>
-      item.participante.toLowerCase().includes(termo)
+      normalizarTexto(item.participante).includes(termo)
     );
   }, [participantes, busca]);
 
@@ -194,9 +204,19 @@ export default function App() {
   const jogosEncerrados =
     resultadosOficiais?.jogos?.filter((jogo) => jogo.encerrado).length ?? 0;
 
+  function rolarPara(ref) {
+    window.requestAnimationFrame(() => {
+      ref.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }
+
   function selecionarParticipante(participante) {
     setParticipanteSelecionado(participante);
     setFaseSelecionada("todos");
+    rolarPara(detalheParticipanteRef);
   }
 
   function selecionarParticipantePeloRanking(participante) {
@@ -280,17 +300,29 @@ export default function App() {
 
       {abaAtual === "participantes" && (
         <section className="layout">
-          <ParticipantList
-            participantes={participantesFiltrados}
-            todosParticipantes={participantes}
-            participanteSelecionado={participanteSelecionado}
-            busca={busca}
-            onBuscaChange={setBusca}
-            onSelecionarParticipante={selecionarParticipante}
-            resultadosOficiais={resultadosOficiais}
-          />
+          <div ref={listaParticipantesRef}>
+            <ParticipantList
+              participantes={participantesFiltrados}
+              todosParticipantes={participantes}
+              participanteSelecionado={participanteSelecionado}
+              busca={busca}
+              onBuscaChange={setBusca}
+              onSelecionarParticipante={selecionarParticipante}
+              resultadosOficiais={resultadosOficiais}
+            />
+          </div>
 
-          <section className="conteudo">
+          <section className="conteudo" ref={detalheParticipanteRef}>
+            <div className="participant-mobile-switch">
+              <span>{participanteSelecionado?.participante || "Participante"}</span>
+              <button
+                type="button"
+                onClick={() => rolarPara(listaParticipantesRef)}
+              >
+                Trocar participante
+              </button>
+            </div>
+
             <ParticipantOverview
               participante={participanteSelecionado}
               participantes={participantes}
@@ -302,17 +334,29 @@ export default function App() {
 
       {abaAtual === "palpites" && (
         <section className="layout">
-          <ParticipantList
-            participantes={participantesFiltrados}
-            todosParticipantes={participantes}
-            participanteSelecionado={participanteSelecionado}
-            busca={busca}
-            onBuscaChange={setBusca}
-            onSelecionarParticipante={selecionarParticipante}
-            resultadosOficiais={resultadosOficiais}
-          />
+          <div ref={listaParticipantesRef}>
+            <ParticipantList
+              participantes={participantesFiltrados}
+              todosParticipantes={participantes}
+              participanteSelecionado={participanteSelecionado}
+              busca={busca}
+              onBuscaChange={setBusca}
+              onSelecionarParticipante={selecionarParticipante}
+              resultadosOficiais={resultadosOficiais}
+            />
+          </div>
 
-          <section className="conteudo">
+          <section className="conteudo" ref={detalheParticipanteRef}>
+            <div className="participant-mobile-switch">
+              <span>{participanteSelecionado?.participante || "Participante"}</span>
+              <button
+                type="button"
+                onClick={() => rolarPara(listaParticipantesRef)}
+              >
+                Trocar participante
+              </button>
+            </div>
+
             <ParticipantDetails participante={participanteSelecionado} />
 
             <PhaseFilters

@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   buscaEhJogosDoDia,
   formatarAgendaJogo,
   formatarDataBrasilia,
+  formatarDataCurta,
   getDataHojeBrasilia,
   nomeMandante,
   nomeVisitante,
@@ -17,9 +18,10 @@ import { formatarSelecao, getSelecaoInfo } from "../utils/teamUtils";
 import TeamName from "./TeamName";
 
 const FILTROS_RAPIDOS = [
-  { id: "todos", label: "Todos" },
   { id: "hoje", label: "Jogos de Hoje" },
+  { id: "dia", label: "Por Dia" },
   { id: "selecao", label: "Por Seleção" },
+  { id: "todos", label: "Todos" },
   { id: "busca", label: "Busca" },
 ];
 
@@ -119,27 +121,16 @@ function resultadoOficialTexto(jogo) {
   return placarComPenaltisTexto(jogo);
 }
 
-function confrontoDefinido(jogo) {
-  if (jogo?.selecao_a && jogo?.selecao_b) return true;
-
-  return Boolean(
-    jogo?.fase === "grupos" && jogo?.mandante && jogo?.visitante
-  );
-}
-
 function statusDoJogo(jogo) {
   if (jogo?.encerrado) return "encerrado";
-  if (confrontoDefinido(jogo)) return "definido";
 
-  return "aguardando";
+  return "pendente";
 }
 
 function textoStatusJogo(jogo) {
-  if (jogo?.encerrado) return "Encerrado";
-  if (jogo?.fase === "grupos") return "Pendente";
-  if (confrontoDefinido(jogo)) return "Definido";
+  if (jogo?.encerrado) return "Resultado cadastrado";
 
-  return "A definir";
+  return "Pendente";
 }
 
 function rotuloGrupo(jogo) {
@@ -155,6 +146,10 @@ function jogoEmBusca(jogo, termo) {
 
   if (buscaEhJogosDoDia(termo)) {
     return jogo.data === getDataHojeBrasilia();
+  }
+
+  if (/^\d+$/.test(termo)) {
+    return String(jogo.jogo) === termo;
   }
 
   const conteudo = normalizarTexto(
@@ -260,6 +255,19 @@ function agruparJogosPorData(jogos) {
     }));
 }
 
+function formatarDiaSemana(data) {
+  if (!data || typeof data !== "string") return "";
+
+  const [ano, mes, dia] = data.split("-").map(Number);
+
+  if (!ano || !mes || !dia) return "";
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    weekday: "short",
+  }).format(new Date(Date.UTC(ano, mes - 1, dia, 12)));
+}
+
 function getInfoSelecao(selecao) {
   const info = getSelecaoInfo(selecao);
 
@@ -320,6 +328,20 @@ function textoPontos(calculo, jogo) {
   return `${calculo.pontos} pts`;
 }
 
+function BotoesVazioHoje({ onVoltarTodos, onVerPorDia }) {
+  return (
+    <div className="resultado-empty-actions">
+      <button type="button" onClick={onVoltarTodos}>
+        Ver todos
+      </button>
+
+      <button type="button" onClick={onVerPorDia}>
+        Ver por dia
+      </button>
+    </div>
+  );
+}
+
 function FiltrosRapidos({
   modoFiltro,
   busca,
@@ -349,6 +371,34 @@ function FiltrosRapidos({
           placeholder="Jogo, seleção, grupo, fase ou data"
         />
       )}
+    </section>
+  );
+}
+
+function DiasCalendario({
+  datas,
+  dataSelecionada,
+  contagemPorData,
+  onSelecionarData,
+}) {
+  if (datas.length === 0) return null;
+
+  return (
+    <section className="card resultados-date-card">
+      <div className="resultados-date-grid">
+        {datas.map((data) => (
+          <button
+            key={data}
+            type="button"
+            className={dataSelecionada === data ? "ativo" : ""}
+            onClick={() => onSelecionarData(data)}
+          >
+            <strong>{formatarDataCurta(data)}</strong>
+            <span>{formatarDiaSemana(data)}</span>
+            <small>{contagemPorData[data] || 0} jogo(s)</small>
+          </button>
+        ))}
+      </div>
     </section>
   );
 }
@@ -385,12 +435,17 @@ function JogoCalendarioCard({ jogo, selecionado, onSelecionarJogo }) {
       className={`resultado-game-card ${status} ${
         selecionado ? "selecionado" : ""
       }`}
+      aria-pressed={selecionado}
       onClick={() => onSelecionarJogo(jogo.jogo)}
     >
       <span className="resultado-game-numero">Jogo {jogo.jogo}</span>
 
+      <span className={`resultado-game-status ${status}`}>
+        {textoStatusJogo(jogo)}
+      </span>
+
       <span className="resultado-game-meta">
-        {rotuloGrupo(jogo)} · {jogo.hora_brasilia || "--:--"}
+        {rotuloGrupo(jogo)} · {formatarAgendaJogo(jogo)}
       </span>
 
       <strong>
@@ -398,10 +453,6 @@ function JogoCalendarioCard({ jogo, selecionado, onSelecionarJogo }) {
         <small>x</small>
         <TeamName selecao={nomeVisitante(jogo)} />
       </strong>
-
-      <span className={`resultado-game-status ${status}`}>
-        {textoStatusJogo(jogo)}
-      </span>
     </button>
   );
 }
@@ -412,6 +463,7 @@ function JogosPorData({
   onSelecionarJogo,
   modoFiltro,
   onVoltarTodos,
+  onVerPorDia,
 }) {
   if (grupos.length === 0) {
     return (
@@ -424,9 +476,10 @@ function JogosPorData({
         </span>
 
         {modoFiltro === "hoje" && (
-          <button type="button" onClick={onVoltarTodos}>
-            Ver todos
-          </button>
+          <BotoesVazioHoje
+            onVoltarTodos={onVoltarTodos}
+            onVerPorDia={onVerPorDia}
+          />
         )}
       </section>
     );
@@ -457,12 +510,13 @@ function JogosPorData({
   );
 }
 
-function PainelJogoSelecionado({ jogo, ranking }) {
+function PainelJogoSelecionado({ jogo, ranking, onVoltarLista }) {
   if (!jogo) return null;
 
   const palpites = ranking.map((item) => {
     const palpite = buscarPalpite(item.dados, jogo.jogo);
-    const calculo = palpite ? calcularPontuacaoJogo(palpite, jogo) : null;
+    const calculo =
+      palpite && jogo?.encerrado ? calcularPontuacaoJogo(palpite, jogo) : null;
 
     return {
       itemRanking: item,
@@ -476,10 +530,19 @@ function PainelJogoSelecionado({ jogo, ranking }) {
       <div className="jogo-consulta-head">
         <div>
           <span>Jogo {jogo.jogo}</span>
-          <strong>{rotuloConfronto(jogo)}</strong>
+          <strong className="jogo-consulta-confronto">
+            <TeamName selecao={nomeMandante(jogo)} />
+            <small>x</small>
+            <TeamName selecao={nomeVisitante(jogo)} />
+          </strong>
         </div>
 
-        <em>{textoStatusJogo(jogo)}</em>
+        <div className="jogo-consulta-actions">
+          <em>{textoStatusJogo(jogo)}</em>
+          <button type="button" onClick={onVoltarLista}>
+            Trocar jogo
+          </button>
+        </div>
       </div>
 
       <div className="jogo-consulta-meta">
@@ -501,6 +564,13 @@ function PainelJogoSelecionado({ jogo, ranking }) {
       )}
 
       <div className="jogo-palpite-lista">
+        <div className="jogo-palpite-row cabecalho">
+          <span>Pos.</span>
+          <strong>Participante</strong>
+          <em>Palpite</em>
+          <small>Pontos</small>
+        </div>
+
         {palpites.map(({ itemRanking, palpite, calculo }) => (
           <div key={itemRanking.participante} className="jogo-palpite-row">
             <span>{itemRanking.posicao}º</span>
@@ -550,7 +620,7 @@ function ComparativoSelecao({ selecao, jogos, ranking }) {
                 <td>{item.participante}</td>
                 {jogos.map((jogo) => {
                   const palpite = buscarPalpite(item.dados, jogo.jogo);
-                  const calculo = palpite
+                  const calculo = palpite && jogo?.encerrado
                     ? calcularPontuacaoJogo(palpite, jogo)
                     : null;
 
@@ -623,8 +693,15 @@ export default function OfficialResults({
   resultadosOficiais,
   calendarioOficial = [],
 }) {
-  const [modoFiltro, setModoFiltro] = useState("todos");
+  const resultadosTopRef = useRef(null);
+  const listaJogosRef = useRef(null);
+  const detalheJogoRef = useRef(null);
+
+  const [modoFiltro, setModoFiltro] = useState("hoje");
   const [busca, setBusca] = useState("");
+  const [dataSelecionada, setDataSelecionada] = useState(() =>
+    getDataHojeBrasilia()
+  );
   const [selecaoSelecionada, setSelecaoSelecionada] = useState("");
   const [jogoSelecionadoId, setJogoSelecionadoId] = useState("");
 
@@ -639,6 +716,24 @@ export default function OfficialResults({
 
   const selecoes = useMemo(() => montarSelecoes(jogosPublicos), [jogosPublicos]);
   const selecaoAtiva = selecaoSelecionada || selecoes[0]?.nome || "";
+  const datasCalendario = useMemo(() => {
+    return Array.from(
+      new Set(jogosPublicos.map((jogo) => jogo.data).filter(Boolean))
+    ).sort((a, b) => a.localeCompare(b));
+  }, [jogosPublicos]);
+
+  const dataDiaAtiva = datasCalendario.includes(dataSelecionada)
+    ? dataSelecionada
+    : datasCalendario[0] || "";
+
+  const contagemPorData = useMemo(() => {
+    return jogosPublicos.reduce((mapa, jogo) => {
+      if (!jogo.data) return mapa;
+
+      mapa[jogo.data] = (mapa[jogo.data] || 0) + 1;
+      return mapa;
+    }, {});
+  }, [jogosPublicos]);
 
   const jogosDaSelecao = useMemo(() => {
     if (!selecaoAtiva) return [];
@@ -652,17 +747,21 @@ export default function OfficialResults({
       return jogosPublicos.filter((jogo) => jogo.data === hoje);
     }
 
+    if (modoFiltro === "dia") {
+      return jogosPublicos.filter((jogo) => jogo.data === dataDiaAtiva);
+    }
+
     if (modoFiltro === "selecao") {
       return jogosDaSelecao;
     }
 
     if (modoFiltro === "busca") {
       const termo = normalizarTexto(busca);
-      return jogosPublicos.filter((jogo) => jogoEmBusca(jogo, termo));
+      return termo ? jogosPublicos.filter((jogo) => jogoEmBusca(jogo, termo)) : [];
     }
 
     return jogosPublicos;
-  }, [busca, jogosDaSelecao, jogosPublicos, modoFiltro]);
+  }, [busca, dataDiaAtiva, jogosDaSelecao, jogosPublicos, modoFiltro]);
 
   const jogoSelecionado = useMemo(() => {
     if (jogoSelecionadoId) {
@@ -673,8 +772,8 @@ export default function OfficialResults({
       );
     }
 
-    return jogosFiltrados[0] || null;
-  }, [jogoSelecionadoId, jogosFiltrados, jogosPublicos]);
+    return null;
+  }, [jogoSelecionadoId, jogosPublicos]);
 
   const gruposPorData = useMemo(
     () => agruparJogosPorData(jogosFiltrados),
@@ -690,22 +789,59 @@ export default function OfficialResults({
   const totalClassificados = contarClassificados(fasesOficiais);
   const totalPosicoesFinais = contarPosicoesFinais(posicoesFinais);
 
+  function rolarPara(ref) {
+    window.requestAnimationFrame(() => {
+      ref.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }
+
   function selecionarModo(id) {
     setModoFiltro(id);
     setJogoSelecionadoId("");
 
+    if (id === "dia" && !datasCalendario.includes(dataSelecionada)) {
+      const hoje = getDataHojeBrasilia();
+      const dataInicial = datasCalendario.includes(hoje)
+        ? hoje
+        : datasCalendario[0] || "";
+
+      setDataSelecionada(dataInicial);
+    }
+
     if (id !== "busca") {
       setBusca("");
     }
+
+    rolarPara(resultadosTopRef);
+  }
+
+  function atualizarBusca(valor) {
+    setBusca(valor);
+    setJogoSelecionadoId("");
   }
 
   function selecionarSelecao(selecao) {
     setSelecaoSelecionada(selecao);
     setJogoSelecionadoId("");
+    rolarPara(listaJogosRef);
+  }
+
+  function selecionarData(data) {
+    setDataSelecionada(data);
+    setJogoSelecionadoId("");
+    rolarPara(listaJogosRef);
+  }
+
+  function selecionarJogo(jogoId) {
+    setJogoSelecionadoId(jogoId);
+    rolarPara(detalheJogoRef);
   }
 
   return (
-    <div className="resultados-pro">
+    <div className="resultados-pro" ref={resultadosTopRef}>
       <section className="resultados-stats-grid">
         <div className="card resultados-stat">
           <span>{textoStatusGeral(resultadosOficiais?.status)}</span>
@@ -741,9 +877,18 @@ export default function OfficialResults({
       <FiltrosRapidos
         modoFiltro={modoFiltro}
         busca={busca}
-        onBuscaChange={setBusca}
+        onBuscaChange={atualizarBusca}
         onSelecionarModo={selecionarModo}
       />
+
+      {modoFiltro === "dia" && (
+        <DiasCalendario
+          datas={datasCalendario}
+          dataSelecionada={dataDiaAtiva}
+          contagemPorData={contagemPorData}
+          onSelecionarData={selecionarData}
+        />
+      )}
 
       {modoFiltro === "selecao" && (
         <SelecoesGrid
@@ -753,15 +898,24 @@ export default function OfficialResults({
         />
       )}
 
-      <PainelJogoSelecionado jogo={jogoSelecionado} ranking={ranking} />
+      <div className="resultados-list-anchor" ref={listaJogosRef}>
+        <JogosPorData
+          grupos={gruposPorData}
+          jogoSelecionado={jogoSelecionado}
+          onSelecionarJogo={selecionarJogo}
+          modoFiltro={modoFiltro}
+          onVoltarTodos={() => selecionarModo("todos")}
+          onVerPorDia={() => selecionarModo("dia")}
+        />
+      </div>
 
-      <JogosPorData
-        grupos={gruposPorData}
-        jogoSelecionado={jogoSelecionado}
-        onSelecionarJogo={setJogoSelecionadoId}
-        modoFiltro={modoFiltro}
-        onVoltarTodos={() => selecionarModo("todos")}
-      />
+      <div className="resultados-detail-anchor" ref={detalheJogoRef}>
+        <PainelJogoSelecionado
+          jogo={jogoSelecionado}
+          ranking={ranking}
+          onVoltarLista={() => rolarPara(listaJogosRef)}
+        />
+      </div>
 
       {modoFiltro === "selecao" && (
         <ComparativoSelecao

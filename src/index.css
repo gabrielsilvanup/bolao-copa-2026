@@ -8066,3 +8066,225 @@ td:nth-child(6) {
     max-height: 230px;
   }
 }
+
+/* RESULTADOS E PARTICIPANTES - NAVEGACAO MOBILE-FIRST */
+
+.resultados-pro,
+.resultados-list-anchor,
+.resultados-detail-anchor,
+.conteudo {
+  scroll-margin-top: 86px;
+}
+
+.resultados-date-card {
+  padding: 10px;
+  border-radius: 16px;
+}
+
+.resultados-date-grid {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.resultados-date-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.resultados-date-grid button {
+  flex: 0 0 92px;
+  display: grid;
+  gap: 2px;
+  min-height: 58px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: #ffffff;
+  color: var(--navy-950);
+  text-align: left;
+}
+
+.resultados-date-grid button.ativo {
+  border-color: rgba(0, 108, 255, 0.65);
+  background: rgba(0, 108, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(0, 108, 255, 0.18);
+}
+
+.resultados-date-grid strong {
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.resultados-date-grid span,
+.resultados-date-grid small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.resultado-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.resultado-empty-actions button {
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--navy-950);
+  color: #ffffff;
+  font-weight: 950;
+}
+
+.resultado-empty.rapido .resultado-empty-actions button + button {
+  background: #eef3fb;
+  color: var(--navy-950);
+}
+
+.resultado-game-card {
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.resultado-game-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 108, 255, 0.45);
+}
+
+.resultado-game-status.pendente {
+  background: rgba(246, 196, 69, 0.22);
+  color: #755000;
+}
+
+.resultado-game-card > .resultado-game-status {
+  grid-column: auto;
+  justify-self: end;
+}
+
+.resultado-game-meta {
+  grid-column: 1 / 3;
+  justify-self: start;
+}
+
+.jogo-consulta-head .jogo-consulta-confronto {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: visible;
+  white-space: normal;
+}
+
+.jogo-consulta-head .jogo-consulta-confronto small {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.jogo-consulta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  justify-content: flex-end;
+}
+
+.jogo-consulta-actions button {
+  min-height: 26px;
+  padding: 6px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--navy-950);
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.jogo-palpite-row.cabecalho {
+  min-height: 30px;
+  background: var(--navy-950);
+  border-color: var(--navy-950);
+}
+
+.jogo-palpite-row.cabecalho span,
+.jogo-palpite-row.cabecalho strong,
+.jogo-palpite-row.cabecalho em,
+.jogo-palpite-row.cabecalho small {
+  background: transparent;
+  color: #ffffff;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.participant-mobile-switch {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .resultados-pro,
+  .resultados-list-anchor,
+  .resultados-detail-anchor,
+  .conteudo {
+    scroll-margin-top: 64px;
+  }
+
+  .jogo-consulta-actions {
+    justify-content: flex-start;
+  }
+
+  .jogo-consulta-head .jogo-consulta-confronto {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .jogo-consulta-head .jogo-consulta-confronto small {
+    display: none;
+  }
+
+  .jogo-palpite-row.cabecalho {
+    display: none;
+  }
+
+  .participant-mobile-switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 42px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 8px 20px rgba(3, 18, 47, 0.06);
+  }
+
+  .participant-mobile-switch span {
+    min-width: 0;
+    color: var(--navy-950);
+    font-size: 12px;
+    font-weight: 950;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .participant-mobile-switch button {
+    flex: 0 0 auto;
+    min-height: 30px;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--navy-950);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 950;
+  }
+}

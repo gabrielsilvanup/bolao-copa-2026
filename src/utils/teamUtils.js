@@ -128,8 +128,8 @@ function emojiBandeira(codigo) {
   if (!codigo) return null;
 
   const excecoes = {
-    "gb-eng": "🏴",
-    "gb-sct": "🏴",
+    "gb-eng": "\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}",
+    "gb-sct": "\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}",
   };
 
   if (excecoes[codigo]) return excecoes[codigo];
